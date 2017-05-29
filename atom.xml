@@ -1,0 +1,1009 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>语言</title>
+  <subtitle>编程是一种美德，是促使一个人不断向上发展的一种原动力. . .</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://guochenglai.com/"/>
+  <updated>2017-05-29T12:45:35.000Z</updated>
+  <id>http://guochenglai.com/</id>
+  
+  <author>
+    <name>guochenglai</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>javafx打包为执行的exe/dmg文件</title>
+    <link href="http://guochenglai.com/2017/02/17/javafx-deploy-exe-dmg-file/"/>
+    <id>http://guochenglai.com/2017/02/17/javafx-deploy-exe-dmg-file/</id>
+    <published>2017-02-17T13:32:02.000Z</published>
+    <updated>2017-05-29T12:45:35.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Java具有一次编写导出运行的特点，而新一代的Java桌面支持程序JavaFx，更是将这种支持方式表现到了极致。我们可以将我们编写的JavaFx程序打包成直接可运行的程序。这种打包方式，会将本平台的JDK也一同打包入可执行的程序。也就是说这种打包的程序在没有JDK的环境也照样运行。  </p>
+<a id="more"></a>
+<h2 id="打包方法"><a href="#打包方法" class="headerlink" title="打包方法"></a>打包方法</h2><p>网上了使用Ant打包的方法，这种方式古老又不方便。下面提供一种简单的方式。 </p>
+<ol>
+<li>添加打包依赖的maven项目</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div></pre></td><td class="code"><pre><div class="line">&lt;!--  这个plugin得作用是将依赖的jar包都打入可执行的程序 --&gt;  </div><div class="line"></div><div class="line">&lt;plugin&gt;  </div><div class="line"></div><div class="line">    &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;  </div><div class="line"></div><div class="line">    &lt;artifactId&gt;maven-dependency-plugin&lt;/artifactId&gt;  </div><div class="line"></div><div class="line">        &lt;version&gt;2.10&lt;/version&gt;  </div><div class="line"></div><div class="line">        &lt;executions&gt;  </div><div class="line"></div><div class="line">            &lt;execution&gt;  </div><div class="line"></div><div class="line">                &lt;id&gt;copy-dependencies&lt;/id&gt;  </div><div class="line"></div><div class="line">                &lt;phase&gt;package&lt;/phase&gt;  </div><div class="line"></div><div class="line">                &lt;configuration&gt;  </div><div class="line"></div><div class="line">                    &lt;overWriteReleases&gt;false&lt;/overWriteReleases&gt;  </div><div class="line"></div><div class="line">                    &lt;overWriteSnapshots&gt;false&lt;/overWriteSnapshots&gt;  </div><div class="line"></div><div class="line">                    &lt;overWriteIfNewer&gt;true&lt;/overWriteIfNewer&gt;  </div><div class="line"></div><div class="line">                &lt;/configuration&gt;  </div><div class="line"></div><div class="line">                &lt;goals&gt;  </div><div class="line"></div><div class="line">                    &lt;goal&gt;copy-dependencies&lt;/goal&gt;  </div><div class="line"></div><div class="line">                &lt;/goals&gt;  </div><div class="line"></div><div class="line">            &lt;/execution&gt;  </div><div class="line"></div><div class="line">        &lt;/executions&gt;  </div><div class="line"></div><div class="line">&lt;/plugin&gt;  </div><div class="line"></div><div class="line">&lt;plugin&gt;  </div><div class="line"></div><div class="line">    &lt;groupId&gt;com.zenjava&lt;/groupId&gt;  </div><div class="line"></div><div class="line">    &lt;artifactId&gt;javafx-maven-plugin&lt;/artifactId&gt;  </div><div class="line"></div><div class="line">    &lt;version&gt;8.8.3&lt;/version&gt;  </div><div class="line"></div><div class="line">    &lt;configuration&gt;  </div><div class="line"></div><div class="line">        &lt;!-- 指明javafx的入口类 --&gt;  </div><div class="line"></div><div class="line">        &lt;mainClass&gt;net.gcl.ticket.ui.Main&lt;/mainClass&gt;  </div><div class="line"></div><div class="line">        &lt;!-- 我是在MAC系统进行打包所以这里是dmg文件 --&gt;  </div><div class="line"></div><div class="line">        &lt;bundler&gt;dmg&lt;/bundler&gt;  </div><div class="line"></div><div class="line">        &lt;!-- 指明打包后文件的存储位置 --&gt;  </div><div class="line"></div><div class="line">        &lt;jfxAppOutputDir&gt;$&#123;project.build.directory&#125;/app&lt;/jfxAppOutputDir&gt;  </div><div class="line"></div><div class="line">        &lt;nativeOutputDir&gt;$&#123;project.build.directory&#125;/native&lt;/nativeOutputDir&gt;  </div><div class="line"></div><div class="line">        &lt;appName&gt;Ticket&lt;/appName&gt;  </div><div class="line"></div><div class="line">        &lt;vendor&gt;net.gcl.ticket&lt;/vendor&gt;  </div><div class="line"></div><div class="line">    &lt;/configuration&gt;  </div><div class="line"></div><div class="line">&lt;/plugin&gt;</div></pre></td></tr></table></figure>
+<ol>
+<li>执行打包命令：</li>
+</ol>
+<pre><code class="java">mvn jfx:<span class="keyword">native</span>
+</code></pre>
+<p>dmg文件就会打包到指定的文件目录，不过我试了几次有时候在桌面，可能是intellij的bug吧。但是打包肯定成功，程序可以直接运行 </p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Java具有一次编写导出运行的特点，而新一代的Java桌面支持程序JavaFx，更是将这种支持方式表现到了极致。我们可以将我们编写的JavaFx程序打包成直接可运行的程序。这种打包方式，会将本平台的JDK也一同打包入可执行的程序。也就是说这种打包的程序在没有JDK的环境也照样运行。  &lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Java" scheme="http://guochenglai.com/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="http://guochenglai.com/tags/Java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>java并发编程之11——Future/ListenableFuture</title>
+    <link href="http://guochenglai.com/2017/02/13/java-concurrent11-future-listenablefuture/"/>
+    <id>http://guochenglai.com/2017/02/13/java-concurrent11-future-listenablefuture/</id>
+    <published>2017-02-13T13:20:48.000Z</published>
+    <updated>2017-05-21T14:25:02.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Java在最初的多线程实现程序<code>Thread</code>、<code>Runnable</code>之中，是没有返回值的。这样的接口带来了很多处理多线程程序的不便。所以后来又引入了<code>Callable</code>接口，以及与之对应的<code>Future</code>接口。这样我们的多线程程序提交到线程池执行的时候就可以返回一个<code>Future</code>对象。然后调用<code>Future.get()</code>就可以获取线程的返回值。  </p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>下面的两个例子给出了。多线程获取返回值的两种实现方式。一个是Java自己提供的原生Future，另外一个是Guava提供的封装接口ListenableFuture。 </p>
+<h3 id="Java之Future示例"><a href="#Java之Future示例" class="headerlink" title="Java之Future示例"></a>Java之Future示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"> <span class="comment">/*    </span></div><div class="line"> * Created by guochenglai on 2/13/17.  </div><div class="line"> */  </div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FutureTest</span> </span>&#123;  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;  </div><div class="line"></div><div class="line">        ExecutorService executorService = Executors.newFixedThreadPool(<span class="number">3</span>);  </div><div class="line"></div><div class="line">        Future&lt;Cinema&gt; addressFuture = executorService.submit(<span class="keyword">new</span> Callable&lt;Cinema&gt;() &#123;  </div><div class="line"></div><div class="line">            <span class="meta">@Override</span>  </div><div class="line"></div><div class="line">            <span class="function"><span class="keyword">public</span> Cinema <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;  </div><div class="line"></div><div class="line">                <span class="keyword">return</span> Cinema;  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125;);  </div><div class="line"></div><div class="line">        Future&lt;Movie&gt; movieFuture = executorService.submit(<span class="keyword">new</span> Callable&lt;Movie&gt;() &#123;  </div><div class="line"></div><div class="line">            <span class="meta">@Override</span>  </div><div class="line"></div><div class="line">            <span class="function"><span class="keyword">public</span> Movie <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;  </div><div class="line"></div><div class="line">                <span class="keyword">return</span> Movie;  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125;);  </div><div class="line"></div><div class="line">        Cinema cinema = CiaddressFuture.get();  </div><div class="line"></div><div class="line">        Movie movie = movieFuture.get();  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="Guava之ListenableFuture示例"><a href="#Guava之ListenableFuture示例" class="headerlink" title="Guava之ListenableFuture示例"></a>Guava之ListenableFuture示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"> <span class="comment">/*    </span></div><div class="line"> * Created by guochenglai on 2/23/17.      </div><div class="line"> */  </div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ListenableFutureTest</span> </span>&#123;  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;  </div><div class="line"></div><div class="line">        ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(<span class="number">3</span>));  </div><div class="line"></div><div class="line">        ListenableFuture&lt;Cinema&gt; cinemaListenableFuture = executorService.submit(<span class="keyword">new</span> Callable&lt;Cinema&gt;() &#123;  </div><div class="line"></div><div class="line">            <span class="meta">@Override</span>  </div><div class="line">            <span class="function"><span class="keyword">public</span> Cinema <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;  </div><div class="line"></div><div class="line">                <span class="keyword">return</span> cinema;  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125;);  </div><div class="line"></div><div class="line">        Futures.addCallback(cinemaListenableFuture, <span class="keyword">new</span> FutureCallback&lt;Cinema&gt;() &#123;  </div><div class="line"></div><div class="line">            <span class="meta">@Override</span>  </div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSuccess</span><span class="params">(Cinema cinema)</span> </span>&#123;  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">            <span class="meta">@Override</span>  </div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Throwable throwable)</span> </span>&#123;  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125;);  </div><div class="line"></div><div class="line">  </div><div class="line"></div><div class="line">        ListenableFuture&lt;Movie&gt; movieListenableFuture = executorService.submit(<span class="keyword">new</span> Callable&lt;Movie&gt;() &#123;  </div><div class="line"></div><div class="line">            <span class="meta">@Override</span>  </div><div class="line"></div><div class="line">            <span class="function"><span class="keyword">public</span> Movie <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;  </div><div class="line"></div><div class="line">                  </div><div class="line"></div><div class="line">                <span class="keyword">return</span> movie;  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125;);  </div><div class="line"></div><div class="line">        Futures.addCallback(movieListenableFuture, <span class="keyword">new</span> FutureCallback&lt;Movie&gt;() &#123;  </div><div class="line"></div><div class="line">            <span class="meta">@Override</span>  </div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSuccess</span><span class="params">(Movie movie)</span> </span>&#123;  </div><div class="line">    </div><div class="line">            &#125;  </div><div class="line"></div><div class="line">            <span class="meta">@Override</span>  </div><div class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Throwable throwable)</span> </span>&#123;  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125;);  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Future与ListenableFuture对比"><a href="#Future与ListenableFuture对比" class="headerlink" title="Future与ListenableFuture对比"></a>Future与ListenableFuture对比</h2><p>通过上面的对比我们可以发现，使用Java的Future对象，我们必须自己去手动检查线程的返回结果。而在ListenableFuture中我们确不必这样。我们只需要写好回调函数即可。但是这并不能说明这两种实现谁更好。他们有着不同的适用场景。比如： </p>
+<h3 id="使用Future的场景"><a href="#使用Future的场景" class="headerlink" title="使用Future的场景"></a>使用Future的场景</h3><ul>
+<li>在一个方法中有多个外部IO，而在方法的最后需要整合这些IO的处理结果。</li>
+</ul>
+<h3 id="使用Listenable的场景"><a href="#使用Listenable的场景" class="headerlink" title="使用Listenable的场景"></a>使用Listenable的场景</h3><ul>
+<li>在UI操作的中间步骤中，给出相应的步骤提示。</li>
+</ul>
+<h2 id="ListenableFuture对Future的扩展"><a href="#ListenableFuture对Future的扩展" class="headerlink" title="ListenableFuture对Future的扩展"></a>ListenableFuture对Future的扩展</h2><h3 id="JdkFutureAdapters-listenInPoolThread-future"><a href="#JdkFutureAdapters-listenInPoolThread-future" class="headerlink" title="JdkFutureAdapters.listenInPoolThread(future)"></a>JdkFutureAdapters.listenInPoolThread(future)</h3><p>JdkFutureAdapters.listenInPoolThread(future)是Guava提供的一种将JDK原生Future转化为ListenableFuture的方法。<br>例如： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Future&lt;Movie&gt; movieFuture = executorService.submit(<span class="keyword">new</span> Callable&lt;Movie&gt;() &#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span> </div><div class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;    </div><div class="line">        <span class="keyword">return</span> Movie;  </div><div class="line">    &#125;  </div><div class="line">&#125;);  </div><div class="line"></div><div class="line">ListenableFuture&lt;Movie&gt; movieListenableFuture = JdkFutureAdapters.listenInPoolThread(movieFuture);</div></pre></td></tr></table></figure>
+<h3 id="transform"><a href="#transform" class="headerlink" title="transform"></a>transform</h3><p>对ListenableFuture的返回值进行转化<br>例如： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Future&lt;Movie&gt; movieFuture = executorService.submit(<span class="keyword">new</span> Callable&lt;Movie&gt;() &#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span>  </div><div class="line">    <span class="function"><span class="keyword">public</span> T <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;  </div><div class="line">        <span class="keyword">return</span> Movie;  </div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;);  </div><div class="line"></div><div class="line">  </div><div class="line"></div><div class="line">ListenableFuture&lt;UIMovie&gt; uiMovieListenableFuture = Futures.transform(movieFuture, <span class="keyword">new</span> AsyncFunction&lt;Movie, UIMovie&gt;() &#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span>  </div><div class="line">    <span class="function"><span class="keyword">public</span> ListenableFuture&lt;UIMovie&gt; <span class="title">apply</span><span class="params">(Movie i)</span> <span class="keyword">throws</span> Exception </span>&#123;            <span class="keyword">return</span> UIMovie;  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<h3 id="allAsList"><a href="#allAsList" class="headerlink" title="allAsList"></a>allAsList</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(<span class="number">3</span>));  </div><div class="line">ListenableFuture&lt;Cinema&gt; cinemaListenableFuture1 = executorService.submit(<span class="keyword">new</span> Callable&lt;Cinema&gt;() &#123;  </div><div class="line"></div><div class="line">            <span class="meta">@Override</span>  </div><div class="line">            <span class="function"><span class="keyword">public</span> Cinema <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;  </div><div class="line">                <span class="keyword">return</span> cinema;  </div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125;);  </div><div class="line"></div><div class="line">ListenableFuture&lt;Cinema&gt; cinemaListenableFuture2 = executorService.submit(<span class="keyword">new</span> Callable&lt;Cinema&gt;() &#123;  </div><div class="line"></div><div class="line">            <span class="meta">@Override</span>  </div><div class="line">            <span class="function"><span class="keyword">public</span> Cinema <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;  </div><div class="line">                <span class="keyword">return</span> Cinema;  </div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125;);  </div><div class="line"></div><div class="line">ListenableFuture&lt;Cinema&gt; cinemaListenableFuture = Futures.allAsList(cinemaListenableFuture1, cinemaListenableFuture2);  </div><div class="line"></div><div class="line">ListenableFuture&lt;UICiema&gt; uiCiemaListenableFuture = Futures.transform(cinemaListenableFuture, <span class="keyword">new</span> AsyncFunction&lt;Cinema, UICineam&gt;() &#123;  </div><div class="line"></div><div class="line">            <span class="meta">@Override</span>  </div><div class="line">            <span class="function"><span class="keyword">public</span> ListenableFuture&lt;UICineam&gt; <span class="title">apply</span><span class="params">(Cinema i)</span> <span class="keyword">throws</span> Exception </span>&#123;  </div><div class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125;);</div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Java在最初的多线程实现程序&lt;code&gt;Thread&lt;/code&gt;、&lt;code&gt;Runnable&lt;/code&gt;之中，是没有返回值的。这样的接口带来了很多处理多线程程序的不便。所以后来又引入了&lt;code&gt;Callable&lt;/code&gt;接口，以及与之对应的&lt;code&gt;Futu
+    
+    </summary>
+    
+      <category term="Java" scheme="http://guochenglai.com/categories/Java/"/>
+    
+      <category term="Java并发编程" scheme="http://guochenglai.com/categories/Java/Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"/>
+    
+    
+      <category term="Java" scheme="http://guochenglai.com/tags/Java/"/>
+    
+      <category term="Java并发编程" scheme="http://guochenglai.com/tags/Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java语法糖</title>
+    <link href="http://guochenglai.com/2017/02/09/java-syntactic-sugar/"/>
+    <id>http://guochenglai.com/2017/02/09/java-syntactic-sugar/</id>
+    <published>2017-02-09T13:13:12.000Z</published>
+    <updated>2017-05-29T12:50:04.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>语法糖就是方便程序员使用但是对语言的功能没有影响的语法。Java语言提供很多的语法糖。学习和了解这些语法糖。有利于我们编写更好的代码以及对代码有更深的理解。<br><a id="more"></a></p>
+<h2 id="常见语法糖"><a href="#常见语法糖" class="headerlink" title="常见语法糖"></a>常见语法糖</h2><p>到目前为止Java已经提供了10多种语法糖，下面这些语法糖是在我们日常开发中常见的 </p>
+<h3 id="泛型与类型擦除"><a href="#泛型与类型擦除" class="headerlink" title="泛型与类型擦除"></a>泛型与类型擦除</h3><p>泛型与类型擦除是JDK1.5之后引入的最有名的语法糖。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">List&lt;String&gt; nameList = <span class="keyword">new</span> ArrayList&lt;&gt;();  </div><div class="line"></div><div class="line">nameList.add(<span class="string">"gcl"</span>);  </div><div class="line"></div><div class="line">nameList.add(<span class="string">"hpx"</span>);</div></pre></td></tr></table></figure>
+<p>以上的代码被编译成字节码之后的代码如下： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">List nameList = <span class="keyword">new</span> ArrayList();  </div><div class="line"></div><div class="line">nameList.add(<span class="string">"gcl"</span>);  </div><div class="line"></div><div class="line">nameList.add(<span class="string">"hpx"</span>);</div></pre></td></tr></table></figure>
+<p>可见在经过编译之后泛型类型就被擦除了。这也就是为什么不能使用泛型来作为重载参数。 </p>
+<h3 id="枚举和字符串的switch"><a href="#枚举和字符串的switch" class="headerlink" title="枚举和字符串的switch"></a>枚举和字符串的switch</h3><p>对字符串的枚举是在Java7中引入的。在JDK1.7之前的版本中并不支持此语法。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">String name = <span class="string">"gcl"</span>;  </div><div class="line"><span class="keyword">switch</span> (name) &#123;  </div><div class="line"></div><div class="line">    <span class="keyword">case</span> <span class="string">"gcl"</span>:&#123;  </div><div class="line"></div><div class="line">        System.out.println(<span class="string">"good !!!"</span>);  </div><div class="line"></div><div class="line">        <span class="keyword">break</span>;  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">    <span class="keyword">case</span> <span class="string">"hpx"</span>:&#123;  </div><div class="line"></div><div class="line">        System.out.println(<span class="string">"haha "</span>);  </div><div class="line"></div><div class="line">        <span class="keyword">break</span>;  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="try-with-resource定义关闭资源"><a href="#try-with-resource定义关闭资源" class="headerlink" title="try-with-resource定义关闭资源"></a>try-with-resource定义关闭资源</h3><p>我前面专门写过一遍文章 [使用try-with-resource改进代码异常处理机制][<a href="http://guochenglai.com/2016/06/01/try-with-resource/]专门介绍了如何使用这个语法糖。来解决解决资源关闭的问题。有兴趣的可以看看。下面只列出这种语法的写法。">http://guochenglai.com/2016/06/01/try-with-resource/]专门介绍了如何使用这个语法糖。来解决解决资源关闭的问题。有兴趣的可以看看。下面只列出这种语法的写法。</a> </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testExecuteQueryNew</span><span class="params">()</span> </span>&#123;    </div><div class="line"></div><div class="line">        <span class="keyword">try</span> &#123;    </div><div class="line"></div><div class="line">            Class.forName(DRIVER_CLASS);    </div><div class="line"></div><div class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;    </div><div class="line"></div><div class="line">            LOGGER.error(<span class="string">"can not find driver class"</span>,e);    </div><div class="line">            <span class="keyword">return</span>;    </div><div class="line"></div><div class="line">        &#125;    </div><div class="line"></div><div class="line">        <span class="keyword">try</span> (Connection connection = DriverManager.getConnection(URL, USER_NAME, PASSWORD); PreparedStatement preparedStatement = connection.prepareStatement(SQL); ResultSet resultSet = preparedStatement.executeQuery();) &#123;    </div><div class="line">        </div><div class="line">            <span class="keyword">if</span> (resultSet.next()) &#123;    </div><div class="line">        System.out.println(resultSet.getObject(<span class="number">1</span>)+<span class="string">" : "</span>+resultSet.getObject(<span class="number">2</span>));    </div><div class="line"></div><div class="line">            &#125;    </div><div class="line"></div><div class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;    </div><div class="line"></div><div class="line">            e.printStackTrace();    </div><div class="line"></div><div class="line">        &#125;    </div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h3 id="自动装箱和拆箱"><a href="#自动装箱和拆箱" class="headerlink" title="自动装箱和拆箱"></a>自动装箱和拆箱</h3><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">    Integer i = 1;  </div><div class="line">    </div><div class="line">    int j = i + 2;  </div><div class="line">```    </div><div class="line">    </div><div class="line"></div><div class="line">### for-each遍历 </div><div class="line">    </div><div class="line">```java</div><div class="line">    </div><div class="line">    List&lt;String&gt; nameList = new ArrayList&lt;&gt;();  </div><div class="line">    </div><div class="line">    for (String name : nameList) &#123;  </div><div class="line">    </div><div class="line">        System.out.println(name);  </div><div class="line">    </div><div class="line">    &#125;  </div><div class="line">```    </div><div class="line">    </div><div class="line"></div><div class="line">### 变长参数 </div><div class="line">    </div><div class="line">```java</div><div class="line">    </div><div class="line">    public int calculateSum(Integer... integers) &#123;  </div><div class="line">        int sum = 0;  </div><div class="line">        for (Integer tmp : integers) &#123;  </div><div class="line">            sum += tmp;  </div><div class="line">        &#125;  </div><div class="line">        return sum;  </div><div class="line">    </div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h3 id="枚举类"><a href="#枚举类" class="headerlink" title="枚举类"></a>枚举类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="keyword">enum</span> StateEnum &#123;  </div><div class="line"></div><div class="line">    VALID(<span class="number">1</span>,<span class="string">"状态有效"</span>),INVALID(<span class="number">0</span>,<span class="string">"状态无效"</span>), DELETE(<span class="number">2</span>, <span class="string">"被删除"</span>);  </div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> code;  </div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String memo;  </div><div class="line"></div><div class="line">    StateEnum(<span class="keyword">int</span> code, String memo) &#123;  </div><div class="line">        <span class="keyword">this</span>.code = code;  </div><div class="line">        <span class="keyword">this</span>.memo = memo; </div><div class="line">    &#125;  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCode</span><span class="params">()</span> </span>&#123;  </div><div class="line">        <span class="keyword">return</span> code;  </div><div class="line">    &#125;  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getMemo</span><span class="params">()</span> </span>&#123;  </div><div class="line">        <span class="keyword">return</span> memo;  </div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;语法糖就是方便程序员使用但是对语言的功能没有影响的语法。Java语言提供很多的语法糖。学习和了解这些语法糖。有利于我们编写更好的代码以及对代码有更深的理解。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Java" scheme="http://guochenglai.com/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="http://guochenglai.com/tags/Java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Tomcat对URI和Parameter中文字符解码详解</title>
+    <link href="http://guochenglai.com/2017/02/07/tomcat-encoding/"/>
+    <id>http://guochenglai.com/2017/02/07/tomcat-encoding/</id>
+    <published>2017-02-07T13:04:34.000Z</published>
+    <updated>2017-05-21T13:20:13.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>前段时间修改了一个web项目，遇到了一个bug是这样的：浏览器的header中的编码，服务器tomcat的编码，服务器机器默认编码，以及服务器代码的编码，都是UTF-8。服务器也在web.xml中使用字符编码过滤器，设置了UTF-8编码来进行字符串编码过滤。但是服务端接收到的参数却乱码。  </p>
+<p>查了好就最后确定了问题的原因：web.xml中关于字符的编码的过滤器没有放到第一位，那么问题的原因到底是什么呢？我们先从下面的一个URL分析开始讲解。<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div></pre></td><td class="code"><pre><div class="line">    http://guochenglai.com/测试?param=测试  </div><div class="line">```    </div><div class="line">    </div><div class="line"></div><div class="line">可以看到这个URL参数中有两个地方出现了中文字符。一个是URI部分，有一个中文字符“测试”，一个是Parameter部分出现了中文字符“测试”。这个地方就会出现一个问题浏览器对URI和Parameter的编码是不一样的。URI的编码是你的程序中指定的如果JS指定为UTF-8这个编码就会是UTF-8编码。而Parameter的编码则是取决于用户电脑环境的默认编码设置，以及浏览器的设置（现在新版的浏览器基本都会采用UTF-8统一编码，）。那么服务器会怎样处理这个两个部分的字符的解码呢？ </div><div class="line"></div><div class="line">## Tomca对URI的解码规则 </div><div class="line"></div><div class="line">我们先看看Tomcat对URI的解码的源代码（我只摘抄了关于URL解码的源代码）： </div><div class="line">    </div><div class="line">```java</div><div class="line">    </div><div class="line">    public class CoyoteAdapter implements Adapter &#123;  </div><div class="line">        /**  </div><div class="line">         * Character conversion of the URI.  </div><div class="line">         */  </div><div class="line">        protected void convertURI(MessageBytes uri, Request request)   </div><div class="line">            throws Exception &#123;  </div><div class="line">    </div><div class="line">            ByteChunk bc = uri.getByteChunk();  </div><div class="line">    </div><div class="line">            int length = bc.getLength();  </div><div class="line">    </div><div class="line">            CharChunk cc = uri.getCharChunk();  </div><div class="line">    </div><div class="line">            cc.allocate(length, -1);  </div><div class="line">    </div><div class="line">            //先去拿配置conf/server.xml文件中connector属性中的编码的配置  </div><div class="line">    </div><div class="line">            String enc = connector.getURIEncoding();   </div><div class="line">    </div><div class="line">            if (enc != null) &#123;  </div><div class="line">    </div><div class="line">                B2CConverter conv = request.getURIConverter();  </div><div class="line">    </div><div class="line">                try &#123;  </div><div class="line">    </div><div class="line">                    if (conv == null) &#123;  </div><div class="line">    </div><div class="line">                        conv = new B2CConverter(enc);  </div><div class="line">    </div><div class="line">                        request.setURIConverter(conv);  </div><div class="line">    </div><div class="line">                    &#125;  </div><div class="line">    </div><div class="line">                &#125; catch (IOException e) &#123;  </div><div class="line">    </div><div class="line">                    // Ignore  </div><div class="line">    </div><div class="line">                    log.error("Invalid URI encoding; using HTTP default");  </div><div class="line">    </div><div class="line">                    connector.setURIEncoding(null);  </div><div class="line">    </div><div class="line">                &#125;  </div><div class="line">    </div><div class="line">                if (conv != null) &#123;  </div><div class="line">    </div><div class="line">                    try &#123;  </div><div class="line">    </div><div class="line">                        conv.convert(bc, cc, cc.getBuffer().length - cc.getEnd());  </div><div class="line">    </div><div class="line">                        uri.setChars(cc.getBuffer(), cc.getStart(),   </div><div class="line">    </div><div class="line">                                     cc.getLength());  </div><div class="line">    </div><div class="line">                        return;  </div><div class="line">    </div><div class="line">                    &#125; catch (IOException e) &#123;  </div><div class="line">                        log.error("Invalid URI character encoding; trying ascii");  </div><div class="line">                        cc.recycle();  </div><div class="line">                    &#125;  </div><div class="line">                &#125;   </div><div class="line">            &#125;  </div><div class="line">   </div><div class="line">            //如果配置文件没有配置URI的编码字符，则采用本系统默认的编码  </div><div class="line">    </div><div class="line">            byte[] bbuf = bc.getBuffer();  </div><div class="line">            char[] cbuf = cc.getBuffer();  </div><div class="line">            int start = bc.getStart();  </div><div class="line">    </div><div class="line">            for (int i = 0; i &lt; length; i++) &#123;  </div><div class="line">                cbuf[i] = (char) (bbuf[i + start] &amp; 0xff);  </div><div class="line">            &#125;   </div><div class="line">            uri.setChars(cbuf, 0, length);  </div><div class="line">   </div><div class="line">        &#125;   </div><div class="line">    &#125;</div></pre></td></tr></table></figure></p>
+<p>通过分析上面的可以看到Tomcat对URI的解码处理是通过两个步骤来完成的。第一步如果配置文件中配置了URI的解码，则按照配置文件的字符码解码，如果没有配置，则按照本系统默认的字符集进行解码我们这里服务器的默认字符集都是UTF-8。也就是说URI的这个部分如果客户端使用UTF-8编码，并且服务器在Connectors中也配置了UTF-8，那么这个是不会出现问题的。真正容易出现问题的是Parameter部分的解码。<br>附件：<br><code>tomcat root path –&gt;conf–&gt;server.xml</code>配置文件中关于connectors的配置如下：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&lt;Connector port=<span class="string">"8888"</span> protocol=<span class="string">"HTTP/1.1"</span>  </div><div class="line"></div><div class="line">           maxThreads=<span class="string">"200"</span> connectionTimeout=<span class="string">"20000"</span>  </div><div class="line"></div><div class="line">           enableLookups=<span class="string">"false"</span> compression=<span class="string">"on"</span>  </div><div class="line"></div><div class="line">           redirectPort=<span class="string">"8443"</span>  </div><div class="line"></div><div class="line">           URIEncoding=<span class="string">"UTF-8"</span>  </div><div class="line"></div><div class="line">           compressableMimeType=<span class="string">"text/csv,text/html,text/xml,text/css,text/plain,text/javascript,application/javascript,application/x-javascript,application/json,application/xml"</span>  </div><div class="line"></div><div class="line">    /&gt;</div></pre></td></tr></table></figure>
+<h2 id="Tomcat对Parameter的解码规则"><a href="#Tomcat对Parameter的解码规则" class="headerlink" title="Tomcat对Parameter的解码规则"></a>Tomcat对Parameter的解码规则</h2><p>我们项目出现问题的原因也就是没有理解Tomcat对Parameter解码的规则。其实Tomcat对Parameter的解码规则是如下的：  </p>
+<ul>
+<li>所有的Parameter中的参数都作为Parameter保存的  </li>
+<li>Parameter的解码操作发生在第一次调用时。首先获取Request.setEncoding中对参数的编码（这个有两个地方设置1是客户端设置，2是服务器使用过滤器设置），并且查看是否将这个编码规则适用于URI的编码。  </li>
+<li><p>如果没有就采用Tomcat的默认编码IOS8859-1，至于为什么默认是这个编码，原因是HTTP规范和Servlet规范都是默认使用这个编码。  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div><div class="line">153</div><div class="line">154</div><div class="line">155</div><div class="line">156</div><div class="line">157</div><div class="line">158</div><div class="line">159</div><div class="line">160</div><div class="line">161</div><div class="line">162</div><div class="line">163</div><div class="line">164</div><div class="line">165</div><div class="line">166</div><div class="line">167</div><div class="line">168</div><div class="line">169</div><div class="line">170</div><div class="line">171</div><div class="line">172</div><div class="line">173</div><div class="line">174</div><div class="line">175</div><div class="line">176</div><div class="line">177</div><div class="line">178</div><div class="line">179</div><div class="line">180</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Request</span> <span class="keyword">implements</span> <span class="title">HttpServletRequest</span> </span>&#123;  </div><div class="line">    <span class="comment">/**  </span></div><div class="line">     * Parse request parameters.  </div><div class="line">     */  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">parseParameters</span><span class="params">()</span> </span>&#123;  </div><div class="line">        <span class="comment">//当调用这个方法解码参数时，就设置解码标志位true，这样以后就直接从缓存中拿解码参数  </span></div><div class="line">        parametersParsed = <span class="keyword">true</span>;  </div><div class="line">        <span class="comment">//先获取未被解码的参数  </span></div><div class="line"></div><div class="line">        Parameters parameters = coyoteRequest.getParameters();  </div><div class="line"></div><div class="line">        <span class="comment">//1  获取参数的解码字符编码，这里是获取的就是request.setEncoding中设置的字符编码  </span></div><div class="line"></div><div class="line">        String enc = getCharacterEncoding();  </div><div class="line"></div><div class="line">        <span class="comment">//下面就是判断request中是否设置了编码，如果设置了编码，就使用request的编码，如果没有设置编码，就是用Tomcat默认的编码ISO8859-1，注意不是别的。因为这个默认编码是继承自http1.0的默认编码规范  </span></div><div class="line"></div><div class="line">        <span class="keyword">boolean</span> useBodyEncodingForURI = connector.getUseBodyEncodingForURI();  </div><div class="line"></div><div class="line">        <span class="keyword">if</span> (enc != <span class="keyword">null</span>) &#123;  </div><div class="line"></div><div class="line">            <span class="comment">//设置参数的编码为enc  </span></div><div class="line"></div><div class="line">            parameters.setEncoding(enc);  </div><div class="line"></div><div class="line">            <span class="comment">//useBodyEncodingForURI也是connector中配置的属性，如果配置为True，这里就会设置URI的编码为enc,否则就使用connector中的URIEncoding设置的编码来解码URI  </span></div><div class="line"></div><div class="line">            <span class="keyword">if</span> (useBodyEncodingForURI) &#123;  </div><div class="line">                parameters.setQueryStringEncoding(enc);  </div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125; <span class="keyword">else</span> &#123;  </div><div class="line"></div><div class="line">            parameters.setEncoding  </div><div class="line">                (org.apache.coyote.Constants.DEFAULT_CHARACTER_ENCODING);  </div><div class="line"></div><div class="line">            <span class="keyword">if</span> (useBodyEncodingForURI) &#123;  </div><div class="line"></div><div class="line">                parameters.setQueryStringEncoding  </div><div class="line">     (org.apache.coyote.Constants.DEFAULT_CHARACTER_ENCODING);  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125;  </div><div class="line">  </div><div class="line">        <span class="comment">//按照上述获取的编码规则，来解析参数  </span></div><div class="line"></div><div class="line">        parameters.handleQueryParameters();  </div><div class="line"></div><div class="line">        <span class="keyword">if</span> (usingInputStream || usingReader)  </div><div class="line">            <span class="keyword">return</span>;  </div><div class="line"></div><div class="line">        <span class="keyword">if</span> (!getMethod().equalsIgnoreCase(<span class="string">"POST"</span>)) </div><div class="line">            <span class="keyword">return</span>;  </div><div class="line"></div><div class="line">        String contentType = getContentType();  </div><div class="line"></div><div class="line">        <span class="keyword">if</span> (contentType == <span class="keyword">null</span>)  </div><div class="line"></div><div class="line">            contentType = <span class="string">""</span>;  </div><div class="line"></div><div class="line">        <span class="keyword">int</span> semicolon = contentType.indexOf(<span class="string">';'</span>);  </div><div class="line"></div><div class="line">        <span class="keyword">if</span> (semicolon &gt;= <span class="number">0</span>) &#123;  </div><div class="line"></div><div class="line">            contentType = contentType.substring(<span class="number">0</span>, semicolon).trim();  </div><div class="line"></div><div class="line">        &#125; <span class="keyword">else</span> &#123;  </div><div class="line"></div><div class="line">            contentType = contentType.trim();  </div><div class="line"></div><div class="line">        &#125;  </div><div class="line"></div><div class="line">        <span class="keyword">if</span> (<span class="string">"multipart/form-data"</span>.equals(contentType)) &#123;  </div><div class="line"></div><div class="line">            parseParts();  </div><div class="line"></div><div class="line">            <span class="keyword">return</span>;  </div><div class="line"></div><div class="line">        &#125;  </div><div class="line"></div><div class="line">        <span class="keyword">if</span> (!(<span class="string">"application/x-www-form-urlencoded"</span>.equals(contentType)))  </div><div class="line"></div><div class="line">            <span class="keyword">return</span>;  </div><div class="line"></div><div class="line">        <span class="keyword">int</span> len = getContentLength();  </div><div class="line"></div><div class="line">        <span class="keyword">if</span> (len &gt; <span class="number">0</span>) &#123;  </div><div class="line"></div><div class="line">            <span class="keyword">int</span> maxPostSize = connector.getMaxPostSize();  </div><div class="line"></div><div class="line">            <span class="keyword">if</span> ((maxPostSize &gt; <span class="number">0</span>) &amp;&amp; (len &gt; maxPostSize)) &#123;  </div><div class="line"></div><div class="line">                <span class="keyword">if</span> (context.getLogger().isDebugEnabled()) &#123;  </div><div class="line"></div><div class="line">                    context.getLogger().debug(  </div><div class="line"> sm.getString(<span class="string">"coyoteRequest.postTooLarge"</span>));  </div><div class="line"></div><div class="line">                &#125;  </div><div class="line"></div><div class="line">                <span class="keyword">return</span>;  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">            <span class="keyword">byte</span>[] formData = <span class="keyword">null</span>;  </div><div class="line"></div><div class="line">            <span class="keyword">if</span> (len &lt; CACHED_POST_LEN) &#123;  </div><div class="line"></div><div class="line">                <span class="keyword">if</span> (postData == <span class="keyword">null</span>)  </div><div class="line"></div><div class="line">                    postData = <span class="keyword">new</span> <span class="keyword">byte</span>[CACHED_POST_LEN];  </div><div class="line"></div><div class="line">                formData = postData;  </div><div class="line"></div><div class="line">            &#125; <span class="keyword">else</span> &#123;  </div><div class="line"></div><div class="line">                formData = <span class="keyword">new</span> <span class="keyword">byte</span>[len];  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">            <span class="keyword">try</span> &#123;  </div><div class="line">                <span class="keyword">if</span> (readPostBody(formData, len) != len) &#123;  </div><div class="line">                    <span class="keyword">return</span>;  </div><div class="line"></div><div class="line">                &#125;  </div><div class="line"></div><div class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;  </div><div class="line"></div><div class="line">                <span class="comment">// Client disconnect  </span></div><div class="line"></div><div class="line">                <span class="keyword">if</span> (context.getLogger().isDebugEnabled()) &#123;  </div><div class="line"></div><div class="line">                    context.getLogger().debug(  </div><div class="line">                            sm.getString(<span class="string">"coyoteRequest.parseParameters"</span>), e);  </div><div class="line"></div><div class="line">                &#125;  </div><div class="line"></div><div class="line">                <span class="keyword">return</span>;  </div><div class="line">            &#125;  </div><div class="line"></div><div class="line">            parameters.processParameters(formData, <span class="number">0</span>, len);  </div><div class="line"></div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"chunked"</span>.equalsIgnoreCase(  </div><div class="line"></div><div class="line">                coyoteRequest.getHeader(<span class="string">"transfer-encoding"</span>))) &#123;  </div><div class="line"></div><div class="line">            <span class="keyword">byte</span>[] formData = <span class="keyword">null</span>;  </div><div class="line"></div><div class="line">            <span class="keyword">try</span> &#123;  </div><div class="line"></div><div class="line">                formData = readChunkedPostBody();  </div><div class="line"></div><div class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;  </div><div class="line"></div><div class="line">                <span class="comment">// Client disconnect  </span></div><div class="line"></div><div class="line">                <span class="keyword">if</span> (context.getLogger().isDebugEnabled()) &#123;  </div><div class="line"></div><div class="line">                    context.getLogger().debug(  </div><div class="line">    sm.getString(<span class="string">"coyoteRequest.parseParameters"</span>), e);  </div><div class="line"></div><div class="line">                &#125;  </div><div class="line"></div><div class="line">                <span class="keyword">return</span>;  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">            <span class="keyword">if</span> (formData != <span class="keyword">null</span>) &#123;  </div><div class="line"></div><div class="line">                parameters.processParameters(formData, <span class="number">0</span>, formData.length);  </div><div class="line"></div><div class="line">            &#125;  </div><div class="line"></div><div class="line">        &#125;  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>通过分析Parameter的参数编码规则可以看到我们代码的问题。我们现在的代码都没有在客户端显示设置<code>request.setEncoding=XXXX</code>，采用的替代方案是在服务器的web.xml中采用过滤器，过滤每个请求设置这个参数。而如果没有把过滤器放在第一位。就会出现一个问题，会采用Tomcat的默认编码IOS8859-1，来解析参数。这也就是为什么我的代码里面所有地方都设置了UTF-8编码。最后也会出现乱码的原因。所以这里提醒大家一定要把web.xml中关于字符编码的过滤器放在第一位。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前段时间修改了一个web项目，遇到了一个bug是这样的：浏览器的header中的编码，服务器tomcat的编码，服务器机器默认编码，以及服务器代码的编码，都是UTF-8。服务器也在web.xml中使用字符编码过滤器，设置了UTF-8编码来进行字符串编码过滤。但是服务端接收到
+    
+    </summary>
+    
+      <category term="Java" scheme="http://guochenglai.com/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="http://guochenglai.com/tags/Java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>AppleScript简明教程</title>
+    <link href="http://guochenglai.com/2017/02/06/apple-script-guide/"/>
+    <id>http://guochenglai.com/2017/02/06/apple-script-guide/</id>
+    <published>2017-02-06T12:59:22.000Z</published>
+    <updated>2017-05-29T12:49:17.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>AppleScript是一个类似英语语法的语言。有直观、简单、易读、易学的特点。不会程序的人一会儿也能入门，并编写一些提高工作效率的软件，使用Mac的用户基本都应该会一点。如果你使用AlfredWorkflow那么AppleScript和它结合开发workflow简直是神兵利器。 </p>
+<a id="more"></a>
+<h2 id="AppleScript的编辑器"><a href="#AppleScript的编辑器" class="headerlink" title="AppleScript的编辑器"></a>AppleScript的编辑器</h2><p>Mac电脑提供了一个专门用来开发调试AppleScript的编辑器，在 <code>Application –&gt; Utilities –&gt; ScriptEditor</code>中，软件的图标如下：<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/2017020614863818239547.png" alt=""><br>个人觉得就AppleScript的简单程度来说。这个软件已经足够使用了。当然如果你不满意这个软件。网上还有一些收费软件。读者可以自行Google下载。这里我还要给你推荐一个软件那就是大名鼎鼎的<code>JetBrains Intellij Idea</code>这个是用来开发Java程序的。但是里面提供了AppleScript脚本的插件。安装上这个插件之后，当你编写AppleScript脚本时候会自动弹出代码提示。非常方便。 </p>
+<h2 id="HelloWord"><a href="#HelloWord" class="headerlink" title="HelloWord"></a>HelloWord</h2><p>新建一个名叫<code>Hello.scpt</code>的文件。然后双击打开，此时默认使用ScriptEditor打开。在编辑框输入如下内容。然后点击横线所示的三角运行，就会在finder中显示Hello。如下图所示：  </p>
+<p><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170206148638278423152.png" alt=""><br>代码如下: </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">tell application <span class="string">"Finder"</span>  </div><div class="line">  display dialog <span class="string">"Hello"</span>  </div><div class="line">end tell</div></pre></td></tr></table></figure>
+<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p><strong>Boolean（布尔型）</strong></p>
+<p>仅仅包含两个值：True和False </p>
+<p><strong>Number（数字型）、Integer（整型）和Real（实型）</strong></p>
+<p>如：1，2，1.0，1.1，3.14，-1.56<br>Number类可进一步分为Integer（整数型）和Real（实数型）。 </p>
+<p><strong>Text（文本型）和 String（字符串型）</strong></p>
+<p>如：”This is a text”。 请注意引号为英文引号，以后都是这样。<br>在目前的AppleScript中，Text和String两个类型是一致的7。 </p>
+<p><strong>Date（日期型）</strong></p>
+<p>如：date “2009年8月30日星期日 下午12:31:34”。<br>此格式的具体形式由“系统偏好设置-语言与文本”的相关设置决定。 </p>
+<p><strong>Constant（常量型）</strong></p>
+<p>如：yes，no，ask<br>这些常量可以是已经被AppleScript预定义的，也可以是用户定义的不可变变量。这种<br>类型的数据一经确定不可更改。此外可以认为所有关键字都是常量型的数据 </p>
+<p><strong>List（列表型）</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>&#125;，&#123;&#123;<span class="number">1</span>,<span class="number">2</span>&#125;,&#123;a,b,c&#125;,&#125;，&#123;<span class="number">1</span>,<span class="number">1.9</span>, <span class="string">"text"</span>&#125;</div></pre></td></tr></table></figure>
+<p>列表型数据由{}包裹，一个列表中可以再包含列表，形成多维列表，列表里的具体数<br>据可以是同类型的。 </p>
+<p><strong>Record（记录型）</strong></p>
+<p>如：{firstName:”iDoraemon”, lastName:”Nathan”}<br>记录就是带有名称的列表。记录中的每一项都有名称（标识符）。我们可以认为List<br>是每个数据都是匿名的Record。Record也可以进一步包含另一个Record。<br>此例中，包含两个Text型数据 “iDoraemon”和 “Nathan”，它们的标识符分别是<br>firstName和lastName。通过of关键字可以得到想要的数据：<br>firstName of {firstName:”iDoraemon”, lastName:”Nathan”} </p>
+<h2 id="执行shell脚本"><a href="#执行shell脚本" class="headerlink" title="执行shell脚本"></a>执行shell脚本</h2><p>AppleScript中执行shell脚本的语法模板如下：<code>do shell script “ 这里填入shell脚本 “</code><br>例如在AppleScript中执行shell脚本，关闭本机WiFi功能。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">do</span> shell script <span class="string">"networksetup -setairportpower en1 off"</span></div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;AppleScript是一个类似英语语法的语言。有直观、简单、易读、易学的特点。不会程序的人一会儿也能入门，并编写一些提高工作效率的软件，使用Mac的用户基本都应该会一点。如果你使用AlfredWorkflow那么AppleScript和它结合开发workflow简直是神兵利器。 &lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Mac常用技巧" scheme="http://guochenglai.com/categories/Mac%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+    
+      <category term="Mac常用技巧" scheme="http://guochenglai.com/tags/Mac%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>sublime3技巧</title>
+    <link href="http://guochenglai.com/2017/02/04/sublime-guide/"/>
+    <id>http://guochenglai.com/2017/02/04/sublime-guide/</id>
+    <published>2017-02-04T12:55:46.000Z</published>
+    <updated>2017-05-21T12:58:53.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="命令行打开sublime"><a href="#命令行打开sublime" class="headerlink" title="命令行打开sublime"></a>命令行打开sublime</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">ln -s /Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl /usr/local/bin/sublime</div></pre></td></tr></table></figure>
+<p>这样以后在使用sublime打开文件的时候可以直接在命令行打开，例如我要打开<code>test.json</code><br>则可以直接在命令行输入如下： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sublime test.json</div></pre></td></tr></table></figure>
+<h2 id="安装package-control"><a href="#安装package-control" class="headerlink" title="安装package-control"></a>安装package-control</h2><p>package-control是sublime用来安装插件的一个插件。有了他可以很方便地在线安装各种牛逼的插件。<br><code>view–&gt;showConsule</code>在最下面的那个小横条中粘贴如下的python代码： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">import</span> urllib.request,os,hashlib; h = <span class="string">'df21e130d211cfc94d9b0905775a7c0f'</span> + <span class="string">'1e3d39e33b79698005270310898eea76'</span>; pf = <span class="string">'Package Control.sublime-package'</span>; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( <span class="string">'http://packagecontrol.io/'</span> + pf.replace(<span class="string">' '</span>, <span class="string">'%20'</span>)).read(); dh = hashlib.sha256(by).hexdigest(); print(<span class="string">'Error validating download (got %s instead of %s), please try manual install'</span> % (dh, h)) <span class="keyword">if</span> dh != <span class="function">h <span class="keyword">else</span> <span class="title">open</span><span class="params">(os.path.join( ipp, pf)</span>, 'wb' ).<span class="title">write</span><span class="params">(by)</span></span></div></pre></td></tr></table></figure>
+<p>等待上述操作完成就可以自由安装插件了。这时候按下<code>command + shift + p</code> 输入<code>install</code><br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170206148634653631842.png" alt=""><br>选择<code>Install Package</code>我们以安装一个<code>json</code>插件为例：<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/2017020614863466514309.png" alt=""><br>安装完成之后。就可以自由格式化我们输入的json字符串了。 </p>
+]]></content>
+    
+    <summary type="html">
+    
+      sublime是一款非常好用的MAC编辑软件。本文将介绍一些sublime的使用技巧。这些技巧会使你的效率倍增。本篇文章也会长期更新。
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>pac-backup</title>
+    <link href="http://guochenglai.com/2017/02/03/pac-backup/"/>
+    <id>http://guochenglai.com/2017/02/03/pac-backup/</id>
+    <published>2017-02-03T12:53:42.000Z</published>
+    <updated>2017-05-21T12:58:08.000Z</updated>
+    
+    <content type="html"><![CDATA[<p><a href="https://raw.githubusercontent.com/guochenglai/gfw/master/glwlist.pac" target="_blank" rel="external">https://raw.githubusercontent.com/guochenglai/gfw/master/glwlist.pac</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;a href=&quot;https://raw.githubusercontent.com/guochenglai/gfw/master/glwlist.pac&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://raw.githubuserconte
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>使用Alfred Workflow 自动切换网络和代理</title>
+    <link href="http://guochenglai.com/2017/01/28/mac-auto-proxy/"/>
+    <id>http://guochenglai.com/2017/01/28/mac-auto-proxy/</id>
+    <published>2017-01-28T12:50:22.000Z</published>
+    <updated>2017-05-21T12:52:17.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>公司有一个翻墙的pac代理。我自己也买了一个shadowsocket代理。但是公司的代理的速度明显比我自己的要快。所以决定在公司使用公司的代理pac文件，在家使用自己shadowsocket的代理。但是手工切换的方式比较不友好，每次需要打开<code>system –&gt;network –&gt;advance–&gt;auto proxy</code>来手动更改代理文件的设置。非常麻烦而且容易忘记。我们完全可以采用如下的一种全自动的方式来实现。代理的自动切换。  </p>
+<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>本文使用Alfred的workflow来建立两个工作流当在Alfred的输入框中输入<code>home</code>的时候，就自动打开<code>WiFi</code>并打开<code>shadowsocket</code>使用自己的代理。当在公司的时候，就关闭<code>WiFi</code>关闭<code>shadowscoket</code>并修改<code>network</code>中的<code>Automatic Proxy Configuration</code><br>到公司的pac文件。如下图所示<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170206148637911339907.png" alt=""></p>
+<h2 id="办公网络切换至家庭网络"><a href="#办公网络切换至家庭网络" class="headerlink" title="办公网络切换至家庭网络"></a>办公网络切换至家庭网络</h2><ol>
+<li>点击Alfred workflow的左下角<code>+号</code>选择<code>BlankWorkflow</code>新建一个空的workflow如下图所示：<br>![][2]</li>
+<li>选择新建之后会出现如下的文本框。在红色下划线上输入你自己的内容（这个随意填写，自己知道就行，也可以照我的例子填写）<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170206148637945561652.png" alt=""></li>
+<li>在空白的画布上右击选择<code>inputs–&gt;keyword</code><br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170206148637962071241.png" alt=""></li>
+<li>出现如下的界面KeyWord中填写一个名字（注意这里名字不能乱写，要易于记忆，比如我要做的是将网络环境切换到家庭网络，所以我这里取名为home）<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170206148637970456228.png" alt=""></li>
+<li>继续，新建一个script如下图：<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170206148637994874734.png" alt=""><br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170206148638003119113.png" alt=""><br>script的代码如下：</li>
+</ol>
+<pre><code>[2]: http://7xutce.com2.z0.glb.qiniucdn.com/20170206148637927731477.png
+</code></pre><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">do</span> shell script <span class="string">"open /Applications/ShadowsocksX.app"</span>  </div><div class="line"></div><div class="line"><span class="keyword">do</span> shell script <span class="string">"networksetup -setairportpower en1 on"</span></div></pre></td></tr></table></figure>
+<ol>
+<li>将<code>Keyword</code>与<code>Run Script</code>链接起来如下图所示。<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170206148638018027578.png" alt=""></li>
+<li>至此自动切换到家庭网络的功能已经完成。</li>
+</ol>
+<h2 id="家庭网络切换至办公网络"><a href="#家庭网络切换至办公网络" class="headerlink" title="家庭网络切换至办公网络"></a>家庭网络切换至办公网络</h2><p>家庭网络切换至办公网络和上面的过程类似。下面我只贴出script代码：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line">tell application <span class="string">"ShadowsocksX"</span>  </div><div class="line"></div><div class="line">        quit  </div><div class="line"></div><div class="line">end tell  </div><div class="line"></div><div class="line"><span class="keyword">do</span> shell script <span class="string">"sudo networksetup -setautoproxyurl 'Ethernet' '这里填入公司给你的pac文件.pac' "</span>  </div><div class="line"></div><div class="line"><span class="keyword">do</span> shell script <span class="string">"networksetup -setairportpower en1 off"</span></div></pre></td></tr></table></figure></p>
+<p>整个操作完成之后如下图所示。<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170206148638043747633.png" alt=""></p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>使用<code>alt+ space</code>调出Alfred的输入框。输入<code>home</code>就会切换至wifi,并使用shdowsocket作为代理上网。输入<code>qunar</code>就会切换至公司有线网络。并只用公司自己的翻墙代理上网。如下图：<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170206148638067658321.png" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;公司有一个翻墙的pac代理。我自己也买了一个shadowsocket代理。但是公司的代理的速度明显比我自己的要快。所以决定在公司使用公司的代理pac文件，在家使用自己shadowsocket的代理。但是手工切换的方式比较不友好，每次需要打开&lt;code&gt;system –&amp;gt
+    
+    </summary>
+    
+      <category term="Mac常用技巧" scheme="http://guochenglai.com/categories/Mac%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+    
+      <category term="Mac常用技巧" scheme="http://guochenglai.com/tags/Mac%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>mac软件设置启动快捷键</title>
+    <link href="http://guochenglai.com/2017/01/22/mac-software-shortcut/"/>
+    <id>http://guochenglai.com/2017/01/22/mac-software-shortcut/</id>
+    <published>2017-01-22T12:38:59.000Z</published>
+    <updated>2017-05-29T12:51:02.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Linux系统设置了非常多的软件系统快捷键。例如在Ubuntu系统中可以按<code>ctrl + shift + t</code> 启动用户终端。但是Mac系统并没有提供这些软件启动的快捷键。如下介绍一个方法可以为Mac的任意软件设置启动快捷键。  </p>
+<a id="more"></a>
+<p>首先打开Application中的Automator软件：如下图所示：<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170203148611077767969.png" alt=""><br>选择<code>Service</code><br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170203148611080438397.png" alt=""><br>然后会出现如下的界面：<br>选择 Utilities –&gt; Launch Application<br>在service recevies中选择”no input”，然后在launch application下面选择需要快捷打开的软件如下图所示：<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/20170203148611084557651.png" alt=""><br>当完成上述操作之后。点击保存为软件起一个名称。这里需要记住你所起的名称。 </p>
+<p>打开System–&gt;keyboard–&gt;shortcuts–&gt;service–&gt;general<br>找到你刚才起名字的那个软件，然后在后面添加自己的快捷键，如下图所示即可。<br><img src="http://7xutce.com2.z0.glb.qiniucdn.com/2017020314861108802584.png" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Linux系统设置了非常多的软件系统快捷键。例如在Ubuntu系统中可以按&lt;code&gt;ctrl + shift + t&lt;/code&gt; 启动用户终端。但是Mac系统并没有提供这些软件启动的快捷键。如下介绍一个方法可以为Mac的任意软件设置启动快捷键。  &lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Mac常用技巧" scheme="http://guochenglai.com/categories/Mac%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+    
+      <category term="Mac常用技巧" scheme="http://guochenglai.com/tags/Mac%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>InputStream读取问题</title>
+    <link href="http://guochenglai.com/2016/10/30/inputstream-to-byte/"/>
+    <id>http://guochenglai.com/2016/10/30/inputstream-to-byte/</id>
+    <published>2016-10-30T12:04:52.000Z</published>
+    <updated>2017-05-21T12:18:57.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近写了一个项目，需要将HTTP请求的数据读取到一个byte数组中。我的写法如下：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//下面这段代码想做到的功能大概是：先获取inputStream中数据内容的大小。然后实例化一个数组。最后将所有的数据内容读取到这个数组之中。  </span></div><div class="line"></div><div class="line"><span class="keyword">try</span> (InputStream inputStream = httpResponse.getEntity().getContent()) &#123;  </div><div class="line">            <span class="keyword">int</span> size = inputStream.available();  </div><div class="line">            <span class="keyword">byte</span>[] dataContent = <span class="keyword">new</span> <span class="keyword">byte</span>[size];  </div><div class="line">            inputStream.read(dataContent);  </div><div class="line">            <span class="keyword">return</span> dataContent;  </div><div class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;  </div><div class="line">    logger.error(<span class="string">"download qrcode cause exception"</span>, e);  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>代码看起来没什么问题。但是最后测试的时候，总是发现数据和想象中的不一样。搜了好久也没有看到解决方案，于是决定去看Java中InputStream的代码，这个代码其实有两个错误的地方。分别是对available函数和read函数的理解。下面我们看看Java源代码中对着两个函数的解释。 </p>
+<p>首先看看available()函数  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">/**  </span></div><div class="line">     * Returns an estimate of the number of bytes that can be read (or  </div><div class="line">     * skipped over) from this input stream without blocking by the next  </div><div class="line">     * invocation of a method for this input stream. The next invocation  </div><div class="line">     * might be the same thread or another thread.  A single read or skip of this  </div><div class="line">     * many bytes will not block, but may read or skip fewer bytes.  </div><div class="line">     *  </div><div class="line">     * &lt;p&gt; Note that while some implementations of &#123;<span class="doctag">@code</span> InputStream&#125; will return  </div><div class="line">     * the total number of bytes in the stream, many will not.  It is  </div><div class="line">     * never correct to use the return value of this method to allocate  </div><div class="line">     * a buffer intended to hold all data in this stream.  </div><div class="line">     *  </div><div class="line">     * &lt;p&gt; A subclass' implementation of this method may choose to throw an  </div><div class="line">     * &#123;<span class="doctag">@link</span> IOException&#125; if this input stream has been closed by  </div><div class="line">     * invoking the &#123;<span class="doctag">@link</span> #close()&#125; method.  </div><div class="line">     *  </div><div class="line">     * &lt;p&gt; The &#123;<span class="doctag">@code</span> available&#125; method for class &#123;<span class="doctag">@code</span> InputStream&#125; always  </div><div class="line">     * returns &#123;<span class="doctag">@code</span> 0&#125;.  </div><div class="line">     *  </div><div class="line">     * &lt;p&gt; This method should be overridden by subclasses.  </div><div class="line">     *  </div><div class="line">     * <span class="doctag">@return</span>     an estimate of the number of bytes that can be read (or skipped  </div><div class="line">     *             over) from this input stream without blocking or &#123;<span class="doctag">@code</span> 0&#125; when  </div><div class="line">     *             it reaches the end of the input stream.  </div><div class="line">     * <span class="doctag">@exception</span>  IOException if an I/O error occurs.  </div><div class="line">     */  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">available</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;  </div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>; <span class="comment">//这里可以看到available函数默认值返回的是0，可能具体的实现方式返回的数值不同，但是可以肯定的一点是。这里返回的不是HTTP请求所获取的总数据的长度。  </span></div><div class="line"></div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<p>上面的注释的意思大概是，这个函数返回一个从inputStream中获取数据的估计值（注意不是精确值）。这个值也可能是0。一般情况下不是数据的总量。 </p>
+<p>再看看read()函数 </p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**  </span></div><div class="line"> * Reads some number of bytes from the input stream and stores them into  </div><div class="line"> * the buffer array &lt;code&gt;b&lt;/code&gt;. The number of bytes actually read is  </div><div class="line"> * returned as an integer.  This method blocks until input data is  </div><div class="line"> * available, end of file is detected, or an exception is thrown.  </div><div class="line"> *  </div><div class="line"> * &lt;p&gt; If the length of &lt;code&gt;b&lt;/code&gt; is zero, then no bytes are read and  </div><div class="line"> * &lt;code&gt;0&lt;/code&gt; is returned; otherwise, there is an attempt to read at  </div><div class="line"> * least one byte. If no byte is available because the stream is at the  </div><div class="line"> * end of the file, the value &lt;code&gt;-1&lt;/code&gt; is returned; otherwise, at </div><div class="line"> * least one byte is read and stored into &lt;code&gt;b&lt;/code&gt;.  </div><div class="line"> *  </div><div class="line"> * &lt;p&gt; The first byte read is stored into element &lt;code&gt;b[0]&lt;/code&gt;, the  </div><div class="line"> * next one into &lt;code&gt;b[1]&lt;/code&gt;, and so on. The number of bytes read is,  </div><div class="line"> * at most, equal to the length of &lt;code&gt;b&lt;/code&gt;. Let &lt;i&gt;k&lt;/i&gt; be the  </div><div class="line"> * number of bytes actually read; these bytes will be stored in elements  </div><div class="line"> * &lt;code&gt;b[0]&lt;/code&gt; through &lt;code&gt;b[&lt;/code&gt;&lt;i&gt;k&lt;/i&gt;&lt;code&gt;-1]&lt;/code&gt;,  </div><div class="line"> * leaving elements &lt;code&gt;b[&lt;/code&gt;&lt;i&gt;k&lt;/i&gt;&lt;code&gt;]&lt;/code&gt; through  </div><div class="line"> * &lt;code&gt;b[b.length-1]&lt;/code&gt; unaffected.  </div><div class="line"> *  </div><div class="line"> * &lt;p&gt; The &lt;code&gt;read(b)&lt;/code&gt; method for class &lt;code&gt;InputStream&lt;/code&gt;  </div><div class="line"> * has the same effect as: &lt;pre&gt;&lt;code&gt; read(b, 0, b.length) &lt;/code&gt;&lt;/pre&gt;  </div><div class="line"> *  </div><div class="line"> * <span class="doctag">@param</span>      b   the buffer into which the data is read.  </div><div class="line"> * <span class="doctag">@return</span>     the total number of bytes read into the buffer, or  </div><div class="line"> *             &lt;code&gt;-1&lt;/code&gt; if there is no more data because the end of  </div><div class="line"> *             the stream has been reached.  </div><div class="line"> * <span class="doctag">@exception</span>  IOException  If the first byte cannot be read for any reason  </div><div class="line"> * other than the end of the file, if the input stream has been closed, or  </div><div class="line"> * if some other I/O error occurs.  </div><div class="line"> * <span class="doctag">@exception</span>  NullPointerException  if &lt;code&gt;b&lt;/code&gt; is &lt;code&gt;null&lt;/code&gt;. </div><div class="line"> * <span class="doctag">@see</span>        java.io.InputStream#read(byte[], int, int)  </div><div class="line"> */  </div><div class="line"></div><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(<span class="keyword">byte</span> b[])</span> <span class="keyword">throws</span> IOException </span>&#123;  </div><div class="line"></div><div class="line">    <span class="keyword">return</span> read(b, <span class="number">0</span>, b.length);  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>read函数的解释是读取byte数组中的内容，能够读取到多少就读取多少。将实际读取的内容存放在byte数组中。 所以这里也不是你传递数据大小是多少就读取多少的内容。<br>。分析到这里相信大家明白了我上述例子中代码的问题。那么要实现这个功能有没有比较简单的方法呢？其实是有的。很多的工具类都提供了这个解决方案。例如Apache和Guava。下面提供一种guava的实现方案。具体的实现我就不分析了，有兴趣可以去看看guava的源代码。 </p>
+<p>guava的实现：<br> <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line"><span class="keyword">try</span> (InputStream inputStream = httpResponse.getEntity().getContent()) &#123;  </div><div class="line"></div><div class="line">           <span class="keyword">byte</span>[] dataContent = ByteStreams.toByteArray(inputStream);  </div><div class="line"></div><div class="line">           <span class="keyword">return</span> dataContent;  </div><div class="line"></div><div class="line">       &#125; <span class="keyword">catch</span> (Exception e) &#123;  </div><div class="line"></div><div class="line">           logger.error(<span class="string">"download qrcode cause exception"</span>, e);  </div><div class="line"></div><div class="line">       &#125;</div></pre></td></tr></table></figure></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近写了一个项目，需要将HTTP请求的数据读取到一个byte数组中。我的写法如下：&lt;br&gt;&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;
+    
+    </summary>
+    
+      <category term="Java" scheme="http://guochenglai.com/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="http://guochenglai.com/tags/Java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Linux恢复误删除的文件</title>
+    <link href="http://guochenglai.com/2016/10/14/linux-find-deleted-file/"/>
+    <id>http://guochenglai.com/2016/10/14/linux-find-deleted-file/</id>
+    <published>2016-10-14T11:54:10.000Z</published>
+    <updated>2017-05-29T12:52:02.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>使用过Linux的同学，一定都有过错误使用<code>rm -rf</code>命令的经过。一旦使用错误就会将宝贵的资源删除掉。如果后续的处理不当将会造成不可恢复的后果。本文将浅析Linux文件删除的原理，并提供一个简单的方法恢复被删除的文件。  </p>
+<a id="more"></a>
+<h2 id="文件删除的原理"><a href="#文件删除的原理" class="headerlink" title="文件删除的原理"></a>文件删除的原理</h2><p>所有的文件都是以二进制存储在磁盘上的一个磁盘块（称为磁盘节点）。我们每创建一个文件在磁盘上创建一个磁盘节点，并创建一个指针指向磁盘块。然后删除文件的时候，并不是删除磁盘节点，而是将指向磁盘节点的指针减一，当一个磁盘节点的指针减少到0之后，表示这个磁盘节点对应的文件已经没有引用了，那么这个磁盘节点就可以被其他的进程重写。当其他的进程将该磁盘块写完之后。文件内容才会彻底没有。所以理论上当其他进程没有完全写完一个磁盘节点的时候，被误删除的文件总是能够全部或者部分恢复。根据上面的文件删除过程我们可以按照文件恢复的难度划分为如下三个恢复点： </p>
+<ul>
+<li>1 文件的引用标识没有被删除到0的时候。此时被删除的文件可以完全恢复。</li>
+<li>2 文件的引用标识被删除到0了，但是其他进程没有重写此磁盘。理论上被删除的文件可以完全恢复。</li>
+<li>3 文件的引用标识被删除到0了，此磁盘块被其他进行重写了一部分。理论上被删除的文件可以部分恢复。</li>
+</ul>
+<p>本文将介绍第一个阶段的文件如果恢复。注意要想被删除的文件状态停留在第一个阶段。必须有一个前提：占用被删除文件的进程没有被关闭！！！(所以删除文件之后一定要冷静，一定不要关机或者重启)如果占用被删除文件的进程以及被关闭。那么会直接进入，第二或者第三个阶段。恢复文件的难度要大大增加。目前我还在尝试处于第二或者第三阶段的文件恢复方法。如果成功。会在后面的文章之中继续更新。 </p>
+<p>下面是为啥不能关闭占用被删除文件的进程的原因：<br>Linux系统所有项目都是用文件来表示的包括系统的文件，端口，进程，Linux系统没启动一个进程都会在<code>/proc</code>目录下面建立一个文件夹，然后改进程的所有项目，都会在该文件夹下面用一个文件来表示。当执行<code>rm -rf</code>删除一个文件之后此时的文件对应的磁盘块的指针并没有减少到0。因为在/prco目录下面还会有对文件的指针。下面将以一个例子来介绍。如果利用这个文件的指针恢复被删除的文件。 </p>
+<h2 id="误删除文件恢复详细教程"><a href="#误删除文件恢复详细教程" class="headerlink" title="误删除文件恢复详细教程"></a>误删除文件恢复详细教程</h2><p>假设我们有一个Java进程（进程号：23245）在写一个日志文件catalina.out。我们就删除这个文件。然后讲述怎么恢复这个文件。<br>1 删除文件执行：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo rm -rf catalina.out</div></pre></td></tr></table></figure>
+<p><img src="http://7xutce.com1.z0.glb.clouddn.com/20161018147677833260093.jpg?imageView2/0/format/jpg" alt=""><br>现在文件以及被删除了。此时占用次文件的进程并没有被关闭。所以此时磁盘节点的指针为1，不是0。<br>2 查看进程被删除的文件。但是文件指针大于0的文件。<br><img src="http://7xutce.com1.z0.glb.clouddn.com/20161018147677856294380.jpg?imageView2/0/format/jpg" alt=""><br>可以看到：1标准输出，2标准错误输出都指向了这个文件。<br>3 执行恢复操作恢复文件。<br><img src="http://7xutce.com1.z0.glb.clouddn.com/20161018147677876780784.jpg?imageView2/0/format/jpg" alt=""><br>4 查看test.out的内容发现test.out就是我们要恢复的catalina.out的文件的内容。<br>如果想要批量自动恢复文件读者可以自己写一个脚本。应该很简单了吧。 </p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;使用过Linux的同学，一定都有过错误使用&lt;code&gt;rm -rf&lt;/code&gt;命令的经过。一旦使用错误就会将宝贵的资源删除掉。如果后续的处理不当将会造成不可恢复的后果。本文将浅析Linux文件删除的原理，并提供一个简单的方法恢复被删除的文件。  &lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Linux常用技巧" scheme="http://guochenglai.com/categories/Linux%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+    
+      <category term="Linux常用技巧" scheme="http://guochenglai.com/tags/Linux%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>解决Mac电脑端口被占用</title>
+    <link href="http://guochenglai.com/2016/09/30/fix-mac-port-occupy/"/>
+    <id>http://guochenglai.com/2016/09/30/fix-mac-port-occupy/</id>
+    <published>2016-09-30T11:44:51.000Z</published>
+    <updated>2017-05-21T11:53:08.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在日常开发过程中经常遇到端口被占用的情况。这种情况的一般解决思路是:首先找到找到本端口占用的进程的进程号，然后杀掉该进程号对应的进程。Ubuntu/Centos/RedHat等Linux操作系统下一般采用如下的方法。  </p>
+<a id="more"></a>
+<p>1 找到被占用端口的进程。我们以43900端口为例：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo netstat -nap | grep <span class="number">43900</span></div></pre></td></tr></table></figure>
+<p>输出如下：  </p>
+<p><img src="http://7xutce.com1.z0.glb.clouddn.com/20160930147520783710797.jpg?imageView2/0/format/jpg" alt=""><br>2 可以看到43900端口是被进程号为26456的Java进程所占用。如果在确认该进程无用的情况下可以执行如下的命令杀掉该进程，那么端口占用就会被解决：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo kill -<span class="number">9</span> <span class="number">26456</span></div></pre></td></tr></table></figure>
+<p>MAC解决方案<br>但是在MAC系统中没有netstat命令。我们可以用lsof(list open file)来找到占用端口的进程。然后后面的操作一样。<br>1 找到占用端口的进程：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo lsof -i -n -P | grep <span class="number">8080</span></div></pre></td></tr></table></figure></p>
+<p>输出如下：</p>
+<p><img src="http://7xutce.com1.z0.glb.clouddn.com/20160930147520857940747.jpg?imageView2/0/format/jpg" alt=""><br>2 杀掉占用端口的进程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo kill -<span class="number">9</span> <span class="number">49406</span></div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在日常开发过程中经常遇到端口被占用的情况。这种情况的一般解决思路是:首先找到找到本端口占用的进程的进程号，然后杀掉该进程号对应的进程。Ubuntu/Centos/RedHat等Linux操作系统下一般采用如下的方法。  &lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Mac常用技巧" scheme="http://guochenglai.com/categories/Mac%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+    
+      <category term="Mac常用技巧" scheme="http://guochenglai.com/tags/Mac%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>百度无法爬取Github Pages静态网站解决方案</title>
+    <link href="http://guochenglai.com/2016/09/26/baidu-crow-github-page/"/>
+    <id>http://guochenglai.com/2016/09/26/baidu-crow-github-page/</id>
+    <published>2016-09-26T11:34:10.000Z</published>
+    <updated>2017-05-29T12:55:49.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在Github Pages上面托管了自己的静态博客，经过一段时间的运行发现自己网站的流量基本都是来自与谷歌、必应、搜狗等等搜索引擎，确没有百度的搜索引擎的流量，最后谷歌一下发现原因是：  </p>
+<a id="more"></a>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">百度爬取GitHub太频繁了，甚至引起了GitHub的服务不稳</div><div class="line">定，最后GitHub直接把百度屏蔽了，也就是说，所有托管</div><div class="line">到GitHub Pages上的静态博客都是无法被百度搜索到。</div></pre></td></tr></table></figure>
+<p>可以用如下的方法进行验证：<br>打开百度站长平台—&gt;网页抓取—-&gt;抓取诊断。然后点击抓取。完成之后发现抓取状态是失败。这时候点击进入详情发现，返回的HTPP状态是<code>HTTP/1.0 403 Forbidden</code>（403表示链接被拒绝）。如下： </p>
+<p><img src="http://7xutce.com1.z0.glb.clouddn.com/20160926147488124746928.jpg?imageView2/0/format/jpg" alt=""><br>解决这个问题可以有很多的方案，比如： </p>
+<ol>
+<li>自己买个VPS云主机，将自己的博客发布到云主机上面。这个做法的缺点是：成本较高，我们采用GitHub Pages托管静态博客就是为了节省成本。所以这种方案显然是不可行的。</li>
+<li>将自己的服务托管到Coding上（前身是GitCafe，是国内模仿了一个GitHub，他们的关系可以理解成百度和谷歌的关系）。Coding完全模仿了GitHub 也提供了静态博客Pages服务。如果目前客户只是国内的用户，方案二应该是最简单可行的方案</li>
+<li>将自己的博客分别搭建在Coding Pages和GitHub Pages上，然后配置DNS的时候选择让国内的线路流量打到Coding上，其他的线路流量打到GitHub上。因为百度在国内，所以百度抓取的时候会去Coding上面抓取。所以这种方案应该是最理想的方案。</li>
+</ol>
+<p><strong><em>下面是方案三的具体实现</em>：</strong></p>
+<h2 id="将静态Pages同时托管到Coding和GitHub上"><a href="#将静态Pages同时托管到Coding和GitHub上" class="headerlink" title="将静态Pages同时托管到Coding和GitHub上"></a>将静态Pages同时托管到Coding和GitHub上</h2><h3 id="注册Coding并开启Pages服务"><a href="#注册Coding并开启Pages服务" class="headerlink" title="注册Coding并开启Pages服务"></a>注册Coding并开启Pages服务</h3><p>这个过程和GitHub的配置基本一样，只需要注意如下五点： </p>
+<p>1 项目的名称必须和用户名一致。例如我的用户名叫:guochenglai，项目名称也应该叫:guochenglai。否则会出现静态文件路径不对的问题。比如没有样式。<br>2 项目必须是共有的。<br>3 开启Pages的时候注意分支问题。你项目的分支在master，但是pages服务默认分支不是，这个记得修改。<br>4 需要将你的CNAME文件也推送到Coding项目的根目录上<br>5 需要绑定自己的域名，如下图：<br><img src="http://7xutce.com1.z0.glb.clouddn.com/20160926147488246182051.jpg?imageView2/0/format/jpg" alt=""><br>验证Coding Pages配置成功可以在浏览器输入Pages服务地址：<code>guochenglai.coding.me</code>(改成你的项目名和用户名)如果网页正常出现。说明配置成功。 </p>
+<h3 id="将Pages实现双部署"><a href="#将Pages实现双部署" class="headerlink" title="将Pages实现双部署"></a>将Pages实现双部署</h3><p>修改hexo的根配置文件。将deploy选项修改如下： </p>
+<pre><code class="java"># Deployment  
+## Docs: https://hexo.io/docs/deployment.html  
+deploy:   
+  type: git  
+  branch: master  
+  repo:   
+    github: git@github.com:guochenglai/guochenglai.github.io.git ##这里是你的GitHub Pages项目  
+    coding: git@git.coding.net:guochenglai/guochenglai.git ## 这里是你的Coding项目
+</code></pre>
+<h2 id="注册dnspod配置dns流量分发"><a href="#注册dnspod配置dns流量分发" class="headerlink" title="注册dnspod配置dns流量分发"></a>注册dnspod配置dns流量分发</h2><p>因为我的域名是在阿里云购买的。所以这里已阿里云使用dnspod解析域名为例。 </p>
+<h3 id="注册一个dnspod账号"><a href="#注册一个dnspod账号" class="headerlink" title="注册一个dnspod账号"></a>注册一个dnspod账号</h3><p>注册dnspod，并在域名解析页面添加自己的域名如下：<br><img src="http://7xutce.com1.z0.glb.clouddn.com/20160926147488331211114.jpg?imageView2/0/format/jpg" alt=""></p>
+<p>点击配置的域名，会将你以前在阿里云配置的域名解析信息导入，前面两条是阿里云上面配置的域名后面两条是dnspod默认添加的可以不管。页面如下：<br><img src="http://7xutce.com1.z0.glb.clouddn.com/20160926147488351231587.jpg?imageView2/0/format/jpg" alt=""></p>
+<h3 id="修改阿里云的域名服务器"><a href="#修改阿里云的域名服务器" class="headerlink" title="修改阿里云的域名服务器"></a>修改阿里云的域名服务器</h3><p>找到如下的页面：<br>![][5]<br>将DNS服务器修改为如下两个  </p>
+<pre><code>[5]: http://7xutce.com1.z0.glb.clouddn.com/20160926147488381465618.jpg?imageView2/0/format/jpg
+</code></pre><pre><code class="java">f1g1ns1.dnspod.net   
+
+f1g1ns2.dnspod.net
+</code></pre>
+<h3 id="dnspod配置流量分发"><a href="#dnspod配置流量分发" class="headerlink" title="dnspod配置流量分发"></a>dnspod配置流量分发</h3><p>页面的信息如下：<br><img src="http://7xutce.com1.z0.glb.clouddn.com/20160926147488398940006.jpg?imageView2/0/format/jpg" alt=""></p>
+<table>
+<thead>
+<tr>
+<th>主机记录</th>
+<th>记录类型</th>
+<th>线路类型</th>
+<th>记录值</th>
+<th>权重</th>
+<th>MAX优先级</th>
+<th>TTL说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>@</td>
+<td>A</td>
+<td>默认</td>
+<td>192.30.252.153</td>
+<td>—-</td>
+<td>—-</td>
+<td>6000</td>
+<td>国外Github IP的配置 </td>
+</tr>
+<tr>
+<td>@</td>
+<td>A</td>
+<td>默认</td>
+<td>192.30.252.154</td>
+<td>—-</td>
+<td>—-</td>
+<td>6000</td>
+<td>国外Github IP的配置 </td>
+</tr>
+<tr>
+<td>@</td>
+<td>CNAME</td>
+<td>国内</td>
+<td>guochenglai.coding.me.</td>
+<td>—-</td>
+<td>—-</td>
+<td>6000</td>
+<td>国内域名别名 </td>
+</tr>
+<tr>
+<td>WWW</td>
+<td>CNAME</td>
+<td>默认</td>
+<td>guochenglai.github.io.</td>
+<td>—-</td>
+<td>—-</td>
+<td>6000</td>
+<td>国外WWW域名别名 </td>
+</tr>
+<tr>
+<td>WWW</td>
+<td>CNAME</td>
+<td>国内</td>
+<td>guochenglai.coding.me.</td>
+<td>—-</td>
+<td>—-</td>
+<td>6000</td>
+<td>国域WWW域名别名 </td>
+</tr>
+</tbody>
+</table>
+<h2 id="验证百度抓取"><a href="#验证百度抓取" class="headerlink" title="验证百度抓取"></a>验证百度抓取</h2><p>对比抓取失败需要关注两个点：<br>1 网站IP发生了变化，变成了国内的Coding的IP<br>2 抓取状态变成了200表示已经成功<br>如果上面两点都满足说明你的网站已经可以被百度抓取了。剩下的就是等待被百度收录然后建立索引（这个时间一周到一个月不等）。<br><img src="http://7xutce.com1.z0.glb.clouddn.com/20160926147488195627420.jpg?imageView2/0/format/jpg" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在Github Pages上面托管了自己的静态博客，经过一段时间的运行发现自己网站的流量基本都是来自与谷歌、必应、搜狗等等搜索引擎，确没有百度的搜索引擎的流量，最后谷歌一下发现原因是：  &lt;/p&gt;
+    
+    </summary>
+    
+      <category term="杂谈" scheme="http://guochenglai.com/categories/%E6%9D%82%E8%B0%88/"/>
+    
+    
+      <category term="杂谈" scheme="http://guochenglai.com/tags/%E6%9D%82%E8%B0%88/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Guava学习教程之4-Guava集合之间转换</title>
+    <link href="http://guochenglai.com/2016/09/19/guava4-guava-collections/"/>
+    <id>http://guochenglai.com/2016/09/19/guava4-guava-collections/</id>
+    <published>2016-09-19T11:28:18.000Z</published>
+    <updated>2017-05-21T11:43:15.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>我们常常会遇到集合之间的转换，例如：List集合转换成Map的集合，Map的集合转换为List的集合。通常情况下我们都需要进行集合的遍历，然后进行转换，这个实现略low，包括甲骨文公司自己也认识到了这个问题，所以在Java8中引入了流机制来实现非遍历的转换。Java8一下版本的JDK我们可以使用Guava来实现非遍历的集合转换。<br><a id="more"></a><br>下面给我几个常见的非遍历的集合转换示例。 </p>
+<h2 id="List转MultiMap"><a href="#List转MultiMap" class="headerlink" title="List转MultiMap"></a>List转MultiMap</h2><p>这个是最常见的一种数据结构的转换，常见的场景如下：<br>1 计算每个班级所有学生的平均分(将学生按照班级聚合成MultiMap)<br>2 计算每个城市酒店的平均产单量(将酒店按照城市聚合成MultiMap)<br>如果是传统的Java实现方式，则必须进行遍历：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">List&lt;Hotel&gt; hotelList = <span class="keyword">new</span> ArrayList&lt;&gt;();  </div><div class="line">...  </div><div class="line">Map&lt;String,List&lt;Hotel&gt;&gt; cityHotelMap = <span class="keyword">new</span> HashMap&lt;String,List&lt;Hote&gt;&gt;  </div><div class="line"><span class="keyword">for</span>(Hotel hotel:hotelList)&#123;  </div><div class="line">   <span class="keyword">if</span>(!cityHotelMap.contrains(hotel.getCityCode()))&#123;  </div><div class="line">        cityHotelMap.put(hotel.getCityCode(),<span class="keyword">new</span> ArrayList&lt;Hotel&gt;())  </div><div class="line">   &#125;  </div><div class="line">   cityHotelMap.get(hotel.getCityCode()).add(hotel);  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>采用Guava的无遍历实现：</strong></p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">List&lt;Hotel&gt; hotelList = <span class="keyword">new</span> ArrayList&lt;&gt;();  </div><div class="line">....  </div><div class="line">MultiMap&lt;String,Hotel&gt; cityHotelMap = MultiMaps.index(hotelList,<span class="keyword">new</span> Function()&#123;  </div><div class="line">    <span class="meta">@Override</span>  </div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">apply</span><span class="params">(Hotel input)</span> </span>&#123;  </div><div class="line">        <span class="keyword">return</span> input.getCityCode();  </div><div class="line">    &#125;   </div><div class="line">&#125;)</div></pre></td></tr></table></figure>
+<h2 id="List转Map"><a href="#List转Map" class="headerlink" title="List转Map"></a>List转Map</h2><p>List转换成Map如果采用Java的实现，也需要进行遍历。下面直接贴出Guava实现的代码。<br>如下的例子：将一个酒店列表，转换成按照hotelSeq聚合的Map。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">List&lt;Hotel&gt; hotelList = <span class="keyword">new</span> ArrayList&lt;&gt;();  </div><div class="line">....  </div><div class="line">Map&lt;String,Hotel&gt; hotelMap = Maps.uniqueIndex(hotelList,<span class="keyword">new</span> Function()&#123;  </div><div class="line">    <span class="meta">@Override</span>  </div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">apply</span><span class="params">(Hotel input)</span> </span>&#123;  </div><div class="line">        <span class="keyword">return</span> input.getHotelSeq();  </div><div class="line">    &#125;     </div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<h2 id="MultiMap的遍历"><a href="#MultiMap的遍历" class="headerlink" title="MultiMap的遍历"></a>MultiMap的遍历</h2> <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"> <span class="keyword">for</span>(Map.Entry&lt;String,Collection&lt;Hotel&gt;&gt; entry:cityHotelMap.asMap().entrySet())&#123;  </div><div class="line">    String cityCode = entry.getKey();   </div><div class="line">    Collection&lt;Hotel&gt; hotelCollections = entry.getValue();  </div><div class="line"></div><div class="line">    ......  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="MultiMap转List"><a href="#MultiMap转List" class="headerlink" title="MultiMap转List"></a>MultiMap转List</h2><p>MultiMap转换成List有几种情况： </p>
+<ul>
+<li>将所有的Key转换成List</li>
+<li>将所有的Value集合转换成Map</li>
+</ul>
+<h3 id="将MultiMap的key转换成List"><a href="#将MultiMap的key转换成List" class="headerlink" title="将MultiMap的key转换成List"></a>将MultiMap的key转换成List</h3> <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Set&lt;String&gt; cityCodeList =  cityHotelMap.keySet()</div></pre></td></tr></table></figure>
+<h3 id="将MultiMap的value集合转换成"><a href="#将MultiMap的value集合转换成" class="headerlink" title="将MultiMap的value集合转换成"></a>将MultiMap的value集合转换成</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">List&lt;Hotel&gt; hotelList = cityHotelMap.values()</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我们常常会遇到集合之间的转换，例如：List集合转换成Map的集合，Map的集合转换为List的集合。通常情况下我们都需要进行集合的遍历，然后进行转换，这个实现略low，包括甲骨文公司自己也认识到了这个问题，所以在Java8中引入了流机制来实现非遍历的转换。Java8一下版本的JDK我们可以使用Guava来实现非遍历的集合转换。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Guava教程" scheme="http://guochenglai.com/categories/Guava%E6%95%99%E7%A8%8B/"/>
+    
+    
+      <category term="Guava教程" scheme="http://guochenglai.com/tags/Guava%E6%95%99%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Java日志框架之Logback详解</title>
+    <link href="http://guochenglai.com/2016/09/14/java-logback-analysis/"/>
+    <id>http://guochenglai.com/2016/09/14/java-logback-analysis/</id>
+    <published>2016-09-14T09:12:34.000Z</published>
+    <updated>2017-05-21T11:27:23.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Java的日志系统经过了漫长的发展，最后确认为slf4j加logback的结构。充分证明了logback的生命力。<br><a id="more"></a></p>
+<h2 id="java日志的发展"><a href="#java日志的发展" class="headerlink" title="java日志的发展"></a>java日志的发展</h2><p><strong>1 起步阶段</strong><br>在Java发展的初期是没有真正的日志框架的，当时为了排查问题都是使用<code>System.out</code>或者<code>System.err</code>来进行关键信息的记录。然后利用系统的重定向功能将这些关键信息，记录到特定的文件之中。起到记录日志排查问题的作用。这样做有一个很大的缺陷：不灵活不可配置。代码已发布到生产环境便不可更改，除非重新发布代码。 </p>
+<p><strong>2 日志框架出现</strong><br>有需求就会有人提供服务，面对Java的这种日志问题。出现了第一个试图解决Java日志问题的框架–<code>Log4j</code>。log4j确实是一个开创性的产品，里面提出的很多理念都深深地影响着现在的日志系统。最重要的是他几乎解决了当时Java日志系统的所有问题。包括后面的几个日志框架都没有替代它，直到现在他还有很强的生命力。 </p>
+<p><strong>3 SUN公司重视日志框架</strong><br>在Log4j出现之后，SUN公司意识到了日志系统的重要性。于是在JDK1.4之中也加入了logging日志模块。他没有直接将log4j收入囊中，而是参照log4j自己写了一套。但是写的并没有log4j好。最后自己就放弃了。 </p>
+<p><strong>4 Apache公司试图解决日志问题</strong><br>common-logging是apache提供的一个通用的日志接口。用户可以自由选择第三方的日志组件作为具体实现，像log4j，或者jdk自带的logging， common-logging会通过动态查找的机制，在程序运行时自动找出真正使用的日志库。这样做的好处是避免了日志方案的直接耦合。接口是commons-logging实现确可以随时更改而不用更改代码。但是他也有很大的缺陷：由于它使用了ClassLoader寻找和载入底层的日志库， 导致了象OSGI这样的框架无法正常工作，因为OSGI的不同的插件使用自己的ClassLoader。 OSGI的这种机制保证了插件互相独立，然而却使Apache Common-Logging无法工作。所以几乎没有人使用这个日志框架 </p>
+<p><strong>5 日志框架的确定</strong><br>直到SLF4J加Logback的出现，Java的日志系统终于天下归一统了。slf4j类似commons-logging，向应用层提供API接口，所有用户的编程都是面向slf4j的，而底层的实现可以是任何日志框架，现在最好的是logback。他们的优点我就不说了，网上一大堆。 </p>
+<h2 id="logback配置详解"><a href="#logback配置详解" class="headerlink" title="logback配置详解"></a>logback配置详解</h2><p>下面的配置文件可以认为是一个最全的logback的配置文件。在日常的开发中，我们只需要摘取其中的子集就可以了。  </p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;        </div><div class="line">&lt;configuration debug="false" scan="true" scanPeriod="5000"&gt;  </div><div class="line">    &lt;contextName&gt;logback_context&lt;/contextName&gt;  </div><div class="line">    &lt;property name="log.dir" value="/home/chenglai.guo/log" /&gt;  </div><div class="line">    &lt;appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"&gt;  </div><div class="line">        &lt;encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"&gt;  </div><div class="line">            &lt;pattern&gt;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %class:%line - %msg%n&lt;/pattern&gt;  </div><div class="line">        &lt;/encoder&gt;  </div><div class="line">    &lt;/appender&gt;  </div><div class="line"></div><div class="line">    &lt;appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;  </div><div class="line">        &lt;encoder&gt;  </div><div class="line">            &lt;pattern&gt;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %class:%line - %msg%n&lt;/pattern&gt;  </div><div class="line">            &lt;charset&gt;UTF-8&lt;/charset&gt;  </div><div class="line">        &lt;/encoder&gt;  </div><div class="line">        &lt;rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"&gt;  </div><div class="line">            &lt;FileNamePattern&gt;$&#123;log.dir&#125;/%d&#123;yyyy-MM-dd&#125;.error.log&lt;/FileNamePattern&gt;  </div><div class="line">            &lt;MaxHistory&gt;10&lt;/MaxHistory&gt;  </div><div class="line">        &lt;/rollingPolicy&gt;  </div><div class="line">    &lt;/appender&gt;  </div><div class="line"></div><div class="line">    &lt;appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;  </div><div class="line">        &lt;encoder&gt;  </div><div class="line">            &lt;pattern&gt;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %class:%line - %msg%n&lt;/pattern&gt;  </div><div class="line">            &lt;charset&gt;UTF-8&lt;/charset&gt;  </div><div class="line">        &lt;/encoder&gt;  </div><div class="line"></div><div class="line">        &lt;rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"&gt;  </div><div class="line">            &lt;FileNamePattern&gt;$&#123;log.dir&#125;/%d&#123;yyyy-MM-dd&#125;.error.log&lt;/FileNamePattern&gt;  </div><div class="line">            &lt;MaxHistory&gt;30&lt;/MaxHistory&gt;  </div><div class="line">        &lt;/rollingPolicy&gt;  </div><div class="line"></div><div class="line">        &lt;filter class="ch.qos.logback.classic.filter.LevelFilter"&gt;  </div><div class="line">            &lt;level&gt;ERROR&lt;/level&gt;  </div><div class="line">            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;  </div><div class="line">            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;  </div><div class="line">        &lt;/filter&gt;  </div><div class="line"></div><div class="line">          </div><div class="line"></div><div class="line">        &lt;triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy"&gt;  </div><div class="line">            &lt;MaxFileSize&gt;1000MB&lt;/MaxFileSize&gt;  </div><div class="line">        &lt;/triggeringPolicy&gt;  </div><div class="line">    &lt;/appender&gt;  </div><div class="line"></div><div class="line">    &lt;appender name="SQL_FILE"  class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;  </div><div class="line"></div><div class="line">        &lt;rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"&gt;  </div><div class="line">            &lt;FileNamePattern&gt;$&#123;log.dir&#125;/dbaccess.log.%d&#123;yyyy-MM-dd&#125;.log&lt;/FileNamePattern&gt;  </div><div class="line">            &lt;MaxHistory&gt;30&lt;/MaxHistory&gt;      </div><div class="line">        &lt;/rollingPolicy&gt;  </div><div class="line"></div><div class="line">        &lt;encoder&gt;  </div><div class="line">            &lt;pattern&gt;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125;  [%thread] %-5level %class:%line - %msg%n&lt;/pattern&gt;  </div><div class="line">            &lt;charset&gt;UTF-8&lt;/charset&gt;  </div><div class="line">        &lt;/encoder&gt;  </div><div class="line"></div><div class="line">        &lt;filter class="ch.qos.logback.classic.filter.LevelFilter"&gt;  </div><div class="line">            &lt;level&gt;INFO&lt;/level&gt;  </div><div class="line">            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;  </div><div class="line">            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;  </div><div class="line">        &lt;/filter&gt;  </div><div class="line">    &lt;/appender&gt;  </div><div class="line"></div><div class="line">    &lt;logger name="org.springframework" level="ERROR"/&gt;  </div><div class="line">    &lt;logger name="org.apache.ibatis" level="ERROR"/&gt;  </div><div class="line">    &lt;logger name="java.sql.Connection" level="ERROR"/&gt;  </div><div class="line">    &lt;logger name="java.sql.Statement" level="ERROR"/&gt;  </div><div class="line">    &lt;logger name="java.sql.PreparedStatement" level="ERROR"/&gt;  </div><div class="line">    &lt;logger name="com.qunar.des.common.dao" additivity="false" level="INFO"&gt;  </div><div class="line">        &lt;appender-ref ref="SQL_FILE"/&gt;  </div><div class="line">    &lt;/logger&gt;  </div><div class="line"></div><div class="line">    &lt;root level="INFO"&gt;  </div><div class="line">        &lt;appender-ref ref="STDOUT"/&gt;  </div><div class="line">        &lt;appender-ref ref="FILE"/&gt;  </div><div class="line">        &lt;appender-ref ref="ERROR_FILE"/&gt;  </div><div class="line">    &lt;/root&gt;  </div><div class="line"></div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Java的日志系统经过了漫长的发展，最后确认为slf4j加logback的结构。充分证明了logback的生命力。&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Java" scheme="http://guochenglai.com/categories/Java/"/>
+    
+    
+      <category term="Java" scheme="http://guochenglai.com/tags/Java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Guava学习教程之3-Predict,Predicts,Function,Functions函数详解</title>
+    <link href="http://guochenglai.com/2016/09/10/guava3-predict-predicts-function-functions/"/>
+    <id>http://guochenglai.com/2016/09/10/guava3-predict-predicts-function-functions/</id>
+    <published>2016-09-10T13:27:16.000Z</published>
+    <updated>2017-05-29T12:58:22.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Guava提供了一些接口和类，提供了一种类似函数式的编程风格。这个有一定的吸引力，但是远远没有Java8中lamada表达式配合函数式编程来的爽，而且Guava提供的这些接口的主要功能并不是在使用函数式编程风格，而是一下的使用方式。这些类/接口主要有： <a id="more"></a></p>
+<ul>
+<li>Predicate接口：用来判断一个对象是否满足某些条件。</li>
+<li>Predicates类：提供了对Predicate接口的操作方法。</li>
+<li>Function接口：将一种类型的对象转换成另外一种类型的对象。</li>
+<li>Functons类：提供了对Function接口的操作方法。</li>
+</ul>
+<p>Predicate接口的主要作用是配合集合工具类进行过滤。<br>过滤出名字中含有”g”的所有名字：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">Predicate&lt;String&gt; nameFilter = <span class="keyword">new</span> Predicate&lt;String&gt;()&#123;  </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(String input)</span></span>&#123;  </div><div class="line">          <span class="keyword">if</span>(Strings.isNullOrEmpty(input))&#123;  </div><div class="line">              <span class="keyword">return</span> <span class="keyword">false</span>;  </div><div class="line">          &#125;  </div><div class="line"></div><div class="line">          <span class="keyword">if</span>(input.contrains(<span class="string">"g"</span>))&#123;  </div><div class="line">             <span class="keyword">return</span> <span class="keyword">true</span>;  </div><div class="line">          &#125;  </div><div class="line">          <span class="keyword">return</span> <span class="keyword">false</span>;  </div><div class="line">    &#125;   </div><div class="line">&#125;     </div><div class="line"></div><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"gcl"</span>,<span class="string">"guo"</span>,<span class="string">"zs"</span>,<span class="string">"hpx"</span>);  </div><div class="line"></div><div class="line">Collection&lt;String&gt; result = Collections2.filter(names, predicate);</div></pre></td></tr></table></figure>
+<p>说明：<br>在企业开发了经常会有集合的过滤操作，我们往往写一系列类继承自Predicate接口，来进行一系列的过滤。  </p>
+<p>Predicate常用的集合过滤方法： </p>
+<table>
+<thead>
+<tr>
+<th>集合类型</th>
+<th>过滤方法说明 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Collection</td>
+<td>Collections2.filter(Collection, Predicate)将一个collection按照predicate条件进行过滤返回另外一collection </td>
+</tr>
+<tr>
+<td>Set</td>
+<td>Sets.filter(Set, Predicate) 将一个set按照predicate条件进行过滤返回另外一个set </td>
+</tr>
+<tr>
+<td>Map</td>
+<td>Maps.filterKeys(Map, Predicate)  Maps.filterValues(Map,Predicate)  Maps.filterEntries(Map,Predicate) 将一个map按照predicate条件进行过滤返回另外一个map </td>
+</tr>
+<tr>
+<td>Multimap</td>
+<td>Multimaps.filterKeys(Multimap,Predicate) Multimaps.filterValues(Multimap,Predicate) Multimaps.filterEntries(Multimap,Predicate) 将一个Multimap按照predicate条件进行过滤返回另外一个Multimap </td>
+</tr>
+<tr>
+<td>SortedMap</td>
+<td>Maps.filterKeys(SortedMap,Predicate)  Maps.filterValues(SortddMap, Predicate)  Maps.filterEntries(SortedMap, Predicate) 将一个SortedMap按照predicate条件进行过滤返回另外一个SortedMap </td>
+</tr>
+<tr>
+<td>Iterable</td>
+<td>Iterables.filter(Iterable, Predicate) 将一个可迭代的接口列表转换成另外一个可迭代的接口列表 </td>
+</tr>
+<tr>
+<td>Iterator</td>
+<td>Iterators.filter(Iterator, Predicate) 将一个迭代器按照predicate条件转换成另外一个迭代器 </td>
+</tr>
+</tbody>
+</table>
+<p>注意：<br>这里没有对List进行过滤的方法，如果想要过滤返回一个List集合可以采用如下方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">List targetList = Lists.newArrayList(Collections2.filter(originList,predicate))</div></pre></td></tr></table></figure>
+<p>Predicates主要有两个作用： </p>
+<ul>
+<li>提供了常见使用的Predicate方法</li>
+<li>提供了对Predicate接口的操作方法</li>
+</ul>
+<p>过滤出名字中包含字母“g”的所有名字  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"gcl"</span>,<span class="string">"guo"</span>,<span class="string">"zs"</span>,<span class="string">"hpx"</span>);  </div><div class="line"></div><div class="line">List&lt;String&gt; filterNames = Lists.newArrayList(Collections2.filter(names,Predicates.contrainsPattern(<span class="string">"g"</span>))</div></pre></td></tr></table></figure>
+<p>排除所有名字为null的名字  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"gcl"</span>,<span class="keyword">null</span>,<span class="string">"guo"</span>,<span class="string">"zs"</span>,<span class="keyword">null</span>,<span class="string">"hpx"</span>);  </div><div class="line"></div><div class="line">Collection&lt;String&gt; result = Collections.filter(names,Predicates.notNull())</div></pre></td></tr></table></figure>
+<p>Predicate的and/or/not操作： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Predicate andPredicate = Predicates.and(predicateA, predicateB);  </div><div class="line"></div><div class="line">Predicate orPredicate = Predicates.or(predicateA, predicateB);  </div><div class="line"></div><div class="line">Predicate andPredicate = Predicates.not(predicateA);</div></pre></td></tr></table></figure>
+<h2 id="Function"><a href="#Function" class="headerlink" title="Function"></a>Function</h2><p>Function可以用来将一种类型的对象转换成另外一种类型的对象，最常用的是用法是将一种类型的集合转换成另外一种类型的集合。<br>将名字集合中的所有名字后面都加上”baobao”二字（学习支付宝）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">Function&lt;String,String&gt; transFunction = <span class="keyword">new</span> Function(String,String)()&#123;  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">apply</span><span class="params">(input)</span></span>&#123;  </div><div class="line"></div><div class="line">       <span class="keyword">return</span> input+<span class="string">"baobao"</span>;  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;  </div><div class="line"></div><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"gcl"</span>,<span class="string">"guo"</span>,<span class="string">"zs"</span>,<span class="string">"hpx"</span>);  </div><div class="line"></div><div class="line">  </div><div class="line"></div><div class="line">List&lt;String&gt; result = Lists.transform(names,transFunction);</div></pre></td></tr></table></figure></p>
+<p>Function常用的集合转换方法： </p>
+<table>
+<thead>
+<tr>
+<th>集合类型</th>
+<th>过滤方法说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Collection</td>
+<td>Collections2.transform(Collection, Function) 将一个collection按照function函数转换成另外一个collection </td>
+</tr>
+<tr>
+<td>List</td>
+<td>Lists.transform(List, Function) 将一个list按照function函数转换成另外一个list </td>
+</tr>
+<tr>
+<td>Map</td>
+<td>Maps.transformValues(Map,Function)  Maps.transformEntries(Map,EntryTransformer) 将一个map按照function函数转换成另外一个map </td>
+</tr>
+<tr>
+<td>Multimap</td>
+<td>Multimaps.transformValues(Multimap,Function)  Multimaps.transformEntries(Multimap,EntryTransformer) 将一个Multimap按照function函数转换成另外一个Multimap </td>
+</tr>
+<tr>
+<td>Iterator</td>
+<td>Iterators.transform(Iterator, Function) 将一个迭代器按照function函数转换成另外一个迭代器 </td>
+</tr>
+<tr>
+<td>Iterable</td>
+<td>Iterables.transform(Iterable, Function) 将一个可迭代接口列表按照function函数转换成另外一个可迭代接口列表 </td>
+</tr>
+</tbody>
+</table>
+<p>注意：这里没有对Set进行转换的方法，如果需要转换返回一个Set集合可以采用如下的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Set targetSet = Sets.newHashSet(Collectios2.transform(originSet,function))</div></pre></td></tr></table></figure>
+<h2 id="Functions"><a href="#Functions" class="headerlink" title="Functions"></a>Functions</h2><p>Functions是用来对Function接口进行操作：<br>例如：想讲名字的列表转换成字符长度的列表，然后判断字符长度是否是偶数。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Function&lt;String,Integer&gt; f1 = <span class="keyword">new</span> Function&lt;String,Integer&gt;()&#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span>  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">apply</span><span class="params">(String input)</span> </span>&#123;  </div><div class="line"></div><div class="line">        <span class="keyword">return</span> input.length();  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;;  </div><div class="line"></div><div class="line">Function&lt;Integer,Boolean&gt; f2 = <span class="keyword">new</span> Function&lt;Integer,Boolean&gt;()&#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span>  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Boolean <span class="title">apply</span><span class="params">(Integer input)</span> </span>&#123;  </div><div class="line"></div><div class="line">        <span class="keyword">return</span> input % <span class="number">2</span> == <span class="number">0</span>;  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;;  </div><div class="line"></div><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"John"</span>, <span class="string">"Jane"</span>, <span class="string">"Adam"</span>, <span class="string">"Tom"</span>);  </div><div class="line"></div><div class="line">List&lt;Boolean&gt; result = Lists.transform(names, Functions.compose(f2, f1));</div></pre></td></tr></table></figure>
+<p>将名字中含有字母g的名字，转换成字母的长度 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Predicate&lt;String&gt; predicate = <span class="keyword">new</span> Predicate&lt;String&gt;() &#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span>  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(String input)</span> </span>&#123;  </div><div class="line"></div><div class="line">        <span class="keyword">return</span> input.contrains(<span class="string">"a"</span>);  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;;  </div><div class="line"></div><div class="line">Function&lt;String, Integer&gt; func = <span class="keyword">new</span> Function&lt;String,Integer&gt;()&#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span>  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">apply</span><span class="params">(String input)</span> </span>&#123;  </div><div class="line"></div><div class="line">        <span class="keyword">return</span> input.length();  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;;  </div><div class="line"></div><div class="line">  </div><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"gcl"</span>,<span class="string">"guo"</span>,<span class="string">"zs"</span>,<span class="string">"hpx"</span>);  </div><div class="line"></div><div class="line">List&lt;Integer&gt; result = FluentIterable.from(names)  </div><div class="line"></div><div class="line">                        .filter(predicate)  </div><div class="line"></div><div class="line">                        .transform(func)  </div><div class="line"></div><div class="line">                        .toList();</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Guava提供了一些接口和类，提供了一种类似函数式的编程风格。这个有一定的吸引力，但是远远没有Java8中lamada表达式配合函数式编程来的爽，而且Guava提供的这些接口的主要功能并不是在使用函数式编程风格，而是一下的使用方式。这些类/接口主要有：
+    
+    </summary>
+    
+      <category term="Guava教程" scheme="http://guochenglai.com/categories/Guava%E6%95%99%E7%A8%8B/"/>
+    
+    
+      <category term="Guava教程" scheme="http://guochenglai.com/tags/Guava%E6%95%99%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Python连接Hive详细教程</title>
+    <link href="http://guochenglai.com/2016/09/04/python-connect-hive/"/>
+    <id>http://guochenglai.com/2016/09/04/python-connect-hive/</id>
+    <published>2016-09-04T13:20:39.000Z</published>
+    <updated>2017-05-18T13:26:40.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近一段时间，做一些分析运营相关的工作，和hive打的交道比较多。每次需要看数据的时候都需要写一个SQL去验证一下，有的时候甚至不知道表结构，但是hive并不像MySQL那样使用方便。目前我司使用hive查询只有两个入口: </p>
+<ul>
+<li>通过公司的HUE管理页面，这个是推荐的方法，但是有一个问题，每一张表都需要申请。很麻烦，而且我们部门审批hive表的那个XXX太XXX了，申请比较困难。</li>
+<li>使用JDBC进行连接。这个是可以，但是Java使用起来还是不方便。</li>
+</ul>
+<p>所以我就想写一个Python脚本来执行SQL。本来觉得很容易，但是发现这里面的坑太多了。主要问题是Python的库都太弱并且好多库都没人维护了。折腾了一天终于找到了一个比较好的库，下面就是具体的过程： </p>
+<h2 id="安装Python依赖库"><a href="#安装Python依赖库" class="headerlink" title="安装Python依赖库"></a>安装Python依赖库</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">pip install impyla</div></pre></td></tr></table></figure>
+<h2 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">__author__ = <span class="string">'guochenglai'</span>   </div><div class="line">from impala.dbapi <span class="keyword">import</span> connect  </div><div class="line">hive_config = &#123;&#125;  </div><div class="line">hive_config[<span class="string">'online'</span>] = &#123;  </div><div class="line">    <span class="string">'host'</span>: <span class="string">'l-xxx.com'</span>,  </div><div class="line">    <span class="string">'db'</span>: <span class="string">'xxx'</span>,  </div><div class="line">    <span class="string">'port'</span>: <span class="number">12001</span> </div><div class="line">&#125;  </div><div class="line"></div><div class="line"><span class="function">def <span class="title">get_hive_cursor</span><span class="params">(conf)</span>:  </span></div><div class="line">    conn = connect(host=conf[<span class="string">'host'</span>], port=conf[<span class="string">'port'</span>], database=conf[<span class="string">'db'</span>], auth_mechanism=<span class="string">'PLAIN'</span>)  </div><div class="line">    <span class="keyword">return</span> conn.cursor()  </div><div class="line"></div><div class="line"><span class="function">def <span class="title">execute_sql</span><span class="params">(cursor,sql)</span>:     </span></div><div class="line">    cursor.<span class="title">execute</span><span class="params">(sql)</span>  </div><div class="line">    return cursor.<span class="title">fetchall</span><span class="params">()</span>  </div><div class="line"></div><div class="line">def <span class="title">assemble_sql</span><span class="params">()</span>:  </div><div class="line">    sql=<span class="string">''</span><span class="string">'SHOW Tables'</span><span class="string">''</span>  </div><div class="line">    <span class="keyword">return</span> sql  </div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:  </div><div class="line">    hive = hive_config[<span class="string">'online'</span>]  </div><div class="line">    cursor = get_hive_cursor(hive)  </div><div class="line">    sql = assemble_sql()  </div><div class="line">    <span class="function">print <span class="title">execute_sql</span><span class="params">(cursor,sql)</span></span></div></pre></td></tr></table></figure>
+<p>如果是学习的小伙伴上面两部链接hive应该的已经成功了。下面是我尝试其他方法遇到的问题。与教程无关，如果是小白用户就不用看了。 </p>
+<h2 id="其他链接方法中遇到的坑"><a href="#其他链接方法中遇到的坑" class="headerlink" title="其他链接方法中遇到的坑"></a>其他链接方法中遇到的坑</h2><p>在前期尝试了很多其他的方法遇到了很多坑，至今没有解决。如果有人遇到以下的问题，并且已经解决。烦请多交流。<br>遇到的第一个问题程序报错如下： </p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">  File "build/bdist.macosx-10.11-intel/egg/pyhs2/__init__.py", line 7, in connect  </div><div class="line">    # Copyright (c) 1999 by Secret Labs AB.  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/pyhs2/connections.py", line 47, in __init__  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/pyhs2/TCLIService/TCLIService.py", line 154, in OpenSession  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/pyhs2/TCLIService/TCLIService.py", line 165, in recv_OpenSession  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/thrift/protocol/TBinaryProtocol.py", line 140, in readMessageBegin  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/thrift/transport/TTransport.py", line 58, in readAll  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/thrift/transport/TTransport.py", line 159, in read  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/thrift/transport/TSocket.py", line 120, in read  </div><div class="line">thrift.transport.TTransport.TTransportException: TSocket read 0 bytes</div></pre></td></tr></table></figure>
+<p>遇到问题二程序报错如下： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">/usr/local/lib/python2.7/site-packages/setuptools-<span class="number">12.3</span>-py2.7.egg/pkg_resources/init.py:<span class="number">1224</span>: UserWarning: /home/tap/.python-eggs is writable by group/others and vulnerable to attack when used with get_resource_filename. <span class="function">Consider a more secure <span class="title">location</span> <span class="params">(set with .set_extraction_path or the PYTHON_EGG_CACHE environment variable)</span>.  </span></div><div class="line"><span class="title">Traceback</span> <span class="params">(most recent call last)</span>:  </div><div class="line">File "testPktFlow2.py", line 7, in   </div><div class="line">database=<span class="string">'default'</span>) as conn:  </div><div class="line">File <span class="string">"build/bdist.linux-x86_64/egg/pyhs2/init.py"</span>, line <span class="number">7</span>, in connect  </div><div class="line">File <span class="string">"build/bdist.linux-x86_64/egg/pyhs2/connections.py"</span>, line <span class="number">45</span>, in init  </div><div class="line">File <span class="string">"build/bdist.linux-x86_64/egg/pyhs2/cloudera/thrift_sasl.py"</span>, line <span class="number">66</span>, in open  </div><div class="line">thrift.transport.TTransport.TTransportException: Could not start SASL: <span class="function">Error in <span class="title">sasl_client_start</span> <span class="params">(<span class="number">-4</span>)</span> <span class="title">SASL</span><span class="params">(<span class="number">-4</span>)</span>: no mechanism available: No worthy mechs found</span></div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近一段时间，做一些分析运营相关的工作，和hive打的交道比较多。每次需要看数据的时候都需要写一个SQL去验证一下，有的时候甚至不知道表结构，但是hive并不像MySQL那样使用方便。目前我司使用hive查询只有两个入口: &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过公司的HUE管理页
+    
+    </summary>
+    
+      <category term="Linux常用技巧" scheme="http://guochenglai.com/categories/Linux%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+    
+      <category term="Linux常用技巧" scheme="http://guochenglai.com/tags/Linux%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Guava学习教程之2-字符串各种操作详解</title>
+    <link href="http://guochenglai.com/2016/08/30/guava2-strings-joiner-spillter/"/>
+    <id>http://guochenglai.com/2016/08/30/guava2-strings-joiner-spillter/</id>
+    <published>2016-08-30T13:11:01.000Z</published>
+    <updated>2017-05-29T12:58:01.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在本系列的第一篇文章当中，我们介绍了<a href="http://guochenglai.com/2016/08/30/guava1-map-operation/">如何使用Guava来简化Map类</a>的操作。本文将继续承接上文的内容。来分享Guava为字符串操作带来的便利。 </p>
+<a id="more"></a>
+<h2 id="Joiner-字符串链接工具类"><a href="#Joiner-字符串链接工具类" class="headerlink" title="Joiner:字符串链接工具类"></a>Joiner:字符串链接工具类</h2><h3 id="字符串拼接"><a href="#字符串拼接" class="headerlink" title="字符串拼接"></a>字符串拼接</h3><p>在日常开发过程中会经常遇到这样一个需求：将一个List中的元素按照逗号分隔拆分成一个字符串，如果使用原生的Java来编写，我们可能需要如下的几步：<br>1 循环遍历List。<br>2 判断某一项不为null，就加入String中并添加逗号<br>3 删除拼接的字符串的最后一个逗号<br>具体可用如下的代码来表示：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">....  </div><div class="line"></div><div class="line">List&lt;String&gt; list = Arrays.asList(<span class="string">"A"</span>,<span class="string">"null"</span>,<span class="string">"B"</span>);  </div><div class="line"></div><div class="line">StringBuilder sb = <span class="keyword">new</span> StringBuilder();  </div><div class="line"></div><div class="line"><span class="keyword">for</span>(String str:list)&#123;  </div><div class="line"></div><div class="line">   <span class="keyword">if</span>(!Strings.isNullOrEmpty)&#123;  </div><div class="line"></div><div class="line">      sb.append(Str).append(,)  </div><div class="line"></div><div class="line">   &#125;  </div><div class="line"></div><div class="line">&#125;  </div><div class="line"></div><div class="line">sb.setLength(stringBuilder.length()-<span class="number">1</span>);  </div><div class="line"></div><div class="line"><span class="keyword">return</span> sb.toString();</div></pre></td></tr></table></figure>
+<p>功能很简单但是很繁琐吧，而且里面还有很多的坑，比如list需要判空，而且在进行截取操作的时候也需要判空，和长度判断。如何改用Guava实现。可以简化为如下的代码，而且不需要进行各种条件判断。  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List&lt;String&gt; list = Arrays.asList(<span class="string">"A"</span>,<span class="string">"null"</span>,<span class="string">"B"</span>);  </div><div class="line"></div><div class="line"><span class="keyword">return</span> Joiner.on(<span class="string">","</span>).skipNulls.join(list);</div></pre></td></tr></table></figure>
+<h3 id="URL拼接"><a href="#URL拼接" class="headerlink" title="URL拼接"></a>URL拼接</h3><p>拼接生成一个如下的URL  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">http:<span class="comment">//guochenglai.com?name=gcl&amp;age=26&amp;address=beijing</span></div></pre></td></tr></table></figure>
+<p>这里就不在说Java怎么写了直接上Guava的写法:  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">String str = <span class="string">"http://guochenglai.com?"</span> +Joiner.on(<span class="string">"&amp;"</span>).withKeyValueSeparator(<span class="string">"="</span>).join(ImmutableMap.of(<span class="string">"name"</span>,<span class="string">"gcl"</span>,<span class="string">"age"</span>,<span class="string">"26"</span>,<span class="string">"address"</span>,<span class="string">"beijing"</span>));</div></pre></td></tr></table></figure>
+<h2 id="Spliter-字符串拆分工具类"><a href="#Spliter-字符串拆分工具类" class="headerlink" title="Spliter:字符串拆分工具类"></a>Spliter:字符串拆分工具类</h2><h3 id="字符串拆分"><a href="#字符串拆分" class="headerlink" title="字符串拆分"></a>字符串拆分</h3><p>1 Spliter类可以方便地根据正则表达式来拆分字符串，可以去电拆分结果中的空串，还可以做trim操作。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">List&lt;String&gt; splitResults = Splitter.onPattern(<span class="string">","</span>).omitEmptyStrings().trimResults(CharMatcher.NONE).splitToList(<span class="string">"hello,word,,世界,,水平,null"</span>);</div></pre></td></tr></table></figure>
+<p>2 Spliter类还可以做二次拆分，将字符串直接拆分成Map。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">String str = <span class="string">"id=1;name=gcl,age=26"</span>;  </div><div class="line"></div><div class="line"><span class="comment">//按照正则表达式拆分，拆分结构就一行代码  </span></div><div class="line"></div><div class="line">Map&lt;String, String&gt; map = Splitter.onPattern(<span class="string">"[;,]"</span>).withKeyValueSeparator(<span class="string">"="</span>).split(str);  </div><div class="line"></div><div class="line"><span class="keyword">for</span> (Map.Entry&lt;String, String&gt; entry : map.entrySet()) &#123;  </div><div class="line"></div><div class="line">    System.out.println(entry.getKey()+<span class="string">"----&gt;"</span>+entry.getValue());  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="URL拆分"><a href="#URL拆分" class="headerlink" title="URL拆分"></a>URL拆分</h3><p>将如下URL的参数拆分到Map中  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">String url = <span class="string">"http://guochenglai.com?name=gcl&amp;age=26&amp;address=beijing"</span>;  </div><div class="line"></div><div class="line"><span class="comment">//拆分代码就如下一行  </span></div><div class="line">Map&lt;String, String&gt; params = Splitter.on(<span class="string">"&amp;"</span>).withKeyValueSeparator(<span class="string">"="</span>).split(url.substring(url.indexOf(<span class="string">"?"</span>)+<span class="number">1</span>));  </div><div class="line"></div><div class="line"><span class="keyword">for</span> (Map.Entry&lt;String, String&gt; entry : params.entrySet()) &#123;  </div><div class="line"></div><div class="line">    System.out.println(entry.getKey()+<span class="string">"----&gt;"</span>+entry.getValue());  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="Strings-字符串操作工具类"><a href="#Strings-字符串操作工具类" class="headerlink" title="Strings:字符串操作工具类"></a>Strings:字符串操作工具类</h2><p>1 判断字符串是否为Null或者Empty  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">boolean</span> isNullOrEmpty = Strings.isNullOrEmpty(input);</div></pre></td></tr></table></figure>
+<p>2 获得两个字符串相同的前缀或者后缀  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">String commonPrefix = Strings.commonPrefix(strA,strB);  </div><div class="line"></div><div class="line">String commonSuffix = Strings.commonSuffix(strA,strB);</div></pre></td></tr></table></figure>
+<p>3 Strings的padStart和padEnd方法来补全字符串 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">String padEndResult = Strings.padEnd(<span class="string">"123"</span>, <span class="number">4</span>, <span class="string">'#'</span>);  </div><div class="line">String padStartResult = Strings.padStart(<span class="string">"123"</span>, <span class="number">4</span>, <span class="string">'#'</span>);</div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在本系列的第一篇文章当中，我们介绍了&lt;a href=&quot;http://guochenglai.com/2016/08/30/guava1-map-operation/&quot;&gt;如何使用Guava来简化Map类&lt;/a&gt;的操作。本文将继续承接上文的内容。来分享Guava为字符串操作带来的便利。 &lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Guava教程" scheme="http://guochenglai.com/categories/Guava%E6%95%99%E7%A8%8B/"/>
+    
+    
+      <category term="Guava教程" scheme="http://guochenglai.com/tags/Guava%E6%95%99%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Guava学习教程之1-Map操作详解</title>
+    <link href="http://guochenglai.com/2016/08/30/guava1-map-operation/"/>
+    <id>http://guochenglai.com/2016/08/30/guava1-map-operation/</id>
+    <published>2016-08-30T12:50:32.000Z</published>
+    <updated>2017-05-18T13:10:08.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在一开始接触guava的时候我是抵触的。当时这样觉得：相比C++，Java的运行速度有点慢，那么Guava是基于Java封装的运行速度肯定比Java慢，所以不应该使用Java。现在回头来看当时的想法真的有点可笑，真是应了一句话：凡是你排斥的就是你要学习的。下面写几个Guava的优点：<br><a id="more"></a></p>
+<ul>
+<li>优化良好，运行速度快，不要觉得封装的就会速度慢，很多人一看到封装两字就会觉得慢，真是肤浅。guava的封装一条语句完成一系列复杂操作。以这一系列操作来看使用，在最优的实现上来看是一样的。Guava基本上已经优化到了最优，而你自己编写一系列代码，不一定最优，所以guava得速度更快</li>
+<li>提高代码的可读性，代码简介易读。这个在后续的文章之中读者会看到。</li>
+<li>稳定性高，没有bug。</li>
+<li>支持函数式编程，Java在Java8中才有</li>
+</ul>
+<h2 id="MultiMap-在Map的Value中存放多个元素"><a href="#MultiMap-在Map的Value中存放多个元素" class="headerlink" title="MultiMap:在Map的Value中存放多个元素"></a>MultiMap:在Map的Value中存放多个元素</h2><p>MultiMap是一个一个Key对应多个Value的数据结构，他的外部结构类似于java.util.Map，但是实质上他们并没有联系。先看一个例子：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">    </div><div class="line">Map&lt;String, HashSet&lt;String&gt;&gt; hMap = <span class="keyword">new</span> HashMap&lt;String, HashSet&lt;String&gt;&gt;();</div></pre></td></tr></table></figure>
+<p>从我开始写Java的时候已经不知道遇到这种恶心的结构多少次了。采用Java原生方法的写法如下：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">如下的代码是将person的list转换成以name为key，person列表为value的Map  </div><div class="line"></div><div class="line">Map&lt;String, HashSet&lt;String&gt;&gt; hMap = <span class="keyword">new</span> HashMap&lt;String, HashSet&lt;String&gt;&gt;();  </div><div class="line"></div><div class="line"><span class="keyword">for</span>(Person p: personList)&#123;   </div><div class="line"></div><div class="line">    HashSet&lt;Person&gt; set = hMap.get(p.getName());   </div><div class="line"></div><div class="line">    <span class="keyword">if</span>(set == <span class="keyword">null</span>)&#123;   </div><div class="line"></div><div class="line">        set = <span class="keyword">new</span> HashSet&lt;Person&gt;();   </div><div class="line"></div><div class="line">        hMap.put(p.getName(), set);   </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">    set.add(p);   </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>相信只要写Java程序的人都会遇到上面的数据结构，每次看到上面这一坨代码，就难受。换成Guava的MultiMap写法如下：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">   </div><div class="line">Multimap&lt;String, String&gt; map = HashMultimap.create();   </div><div class="line"></div><div class="line"><span class="keyword">for</span>(Person p: personList)&#123;   </div><div class="line"></div><div class="line">   map.put(p.getName(), p);   </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>简单明了，看起来清爽多了。<br>MultiMap的主要实现类有如下几个，可以对比Map类来理解。 </p>
+<table>
+<thead>
+<tr>
+<th>实现类</th>
+<th>详细解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HashMultimap</td>
+<td>key是HashMap的key,value是一个HashSet的集合 </td>
+</tr>
+<tr>
+<td>ArrayListMultimap</td>
+<td>key是HashMap的key,value是一个ArrayList的集合 </td>
+</tr>
+<tr>
+<td>LinkedHashMultimap</td>
+<td>key是LinkedHashMap的key,value是一个LinkedHashSet的集合 </td>
+</tr>
+<tr>
+<td>TreeMultimap</td>
+<td>key是TreeMap的key,value是一个TreeSet的集合 </td>
+</tr>
+<tr>
+<td>ImmutableMultimap</td>
+<td>不可修改的MultiMap，其他的结构类似HashMultiMap </td>
+</tr>
+</tbody>
+</table>
+<h2 id="BiMap-双向Map"><a href="#BiMap-双向Map" class="headerlink" title="BiMap: 双向Map"></a>BiMap: 双向Map</h2><p>BiMap实现了java.util.Map。它的特点是它的value和key都是不可以重复的，换句话说，它的key和value是等价的，如果你向BiMap中存放了重复的元素，它会抛出IllegalArgumentException。<br>示例：众所周知Map数据结构支持用key来查找value，而且非常方便，但是在很多的应用当中，我们需要根据value来查找key那么使用Map结构就会很麻烦。我们通常会按照如下的代码来操作：  </p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span>(Map.Entry&lt;User,Address&gt; entry:map.entrySet())&#123;  </div><div class="line"></div><div class="line">   <span class="keyword">if</span>(entry.getValue.equals(targetAddress))&#123;  </div><div class="line"></div><div class="line">      <span class="keyword">return</span> entry.getKey();  </div><div class="line"></div><div class="line">   &#125;  </div><div class="line"></div><div class="line">&#125;  </div><div class="line"></div><div class="line"><span class="keyword">return</span> <span class="keyword">null</span>;</div></pre></td></tr></table></figure>
+<p>如果我们将User和Address放在Guava的BiMap数据结构中，查找过程就可以简化为如下的代码：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">BiMap&lt;User,Address&gt; biMap = <span class="keyword">new</span> HashBiMap&lt;User,Address&gt;();  </div><div class="line"></div><div class="line"><span class="keyword">return</span> biMap.inverse().get(targetAddress);</div></pre></td></tr></table></figure>
+<p>BiMap的常用实现如下： </p>
+<table>
+<thead>
+<tr>
+<th>实现类</th>
+<th>详细解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HashBiMap</td>
+<td>key和value集合都有hashmap的实现 </td>
+</tr>
+<tr>
+<td>EnumBiMap</td>
+<td>key和value都必须是 enum类型 </td>
+</tr>
+<tr>
+<td>ImmutableiMap</td>
+<td>不可修改的BiMap </td>
+</tr>
+</tbody>
+</table>
+<h2 id="MapMaker-ConcurrentMap的构造工具"><a href="#MapMaker-ConcurrentMap的构造工具" class="headerlink" title="MapMaker: ConcurrentMap的构造工具"></a>MapMaker: ConcurrentMap的构造工具</h2><p>MapMaker可以用来构建ConcurrentMap，选项多，操作灵活。<br>例如：<br>1 构造一个有8把锁的ConcurrentMap  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ConcurrentMap&lt;String,Object&gt; map = <span class="keyword">new</span> MapMaker().concurrencyLevel(<span class="number">8</span>).makeMap();</div></pre></td></tr></table></figure>
+<p>2 构造一个自动过期移除的ConcurrentMap  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">ConcurrentMap&lt;String,Object&gt; map = <span class="keyword">new</span> MapMaker().expireAfterWrite(<span class="number">30</span>,TimeUnit.SECONDS).makeMap();</div></pre></td></tr></table></figure>
+<p>3 构造一个有最大数目限制的ConcurrentMap  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">ConcurrentMap&lt;String,Object&gt; map = <span class="keyword">new</span> MapMaker().maximumSize(<span class="number">100</span>).makeMap();</div></pre></td></tr></table></figure>
+<p>4 构造一个上面几个选项联合的map<br>………………. </p>
+<h2 id="MapDifference-Map的交集并集差集操作"><a href="#MapDifference-Map的交集并集差集操作" class="headerlink" title="MapDifference: Map的交集并集差集操作"></a>MapDifference: Map的交集并集差集操作</h2><p>MapDifference主要是用来进行两个Map的比较操作，例如交集，并集，差集……..<br>1 求出两个Map完全相同的entry </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">MapDifference&lt;String,Object&gt; mapDifference = Maps.difference(mapA,mapB);  </div><div class="line">    </div><div class="line">Map&lt;String,Object&gt; commonMap = mapDifference.entriesInCommon();</div></pre></td></tr></table></figure>
+<p>2 求出两个Map中的key相同，但是value不相同的entry<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">  </div><div class="line">MapDifference&lt;String,Object&gt; mapDifference = Maps.difference(mapA,mapB);  </div><div class="line">    </div><div class="line">Map&lt;String,Object&gt; entriesDiffering = mapDifference.entriesDiffering();</div></pre></td></tr></table></figure></p>
+<p>3 求出两个map，左边有，右边没有的entry  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">  </div><div class="line">MapDifference&lt;String,Object&gt; mapDifference = Maps.difference(mapA,mapB);  </div><div class="line">    </div><div class="line">Map&lt;String,Object&gt; entriesOnlyOnLeft = mapDifference.entriesEntriesOnlyOnLeft();</div></pre></td></tr></table></figure>
+<p>4 求出两个Map，右边有，左边没有的entry  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line">MapDifference&lt;String,Object&gt; mapDifference = Maps.difference(mapA,mapB);  </div><div class="line">    </div><div class="line">Map&lt;String,Object&gt; entriesOnlyOnRight = mapDifference.entriesEntriesOnlyOnRight();</div></pre></td></tr></table></figure>
+<h2 id="Maps-map工具类集合"><a href="#Maps-map工具类集合" class="headerlink" title="Maps:map工具类集合"></a>Maps:map工具类集合</h2><p>1 将一个List转换成Map<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List&lt;Person&gt; personList = <span class="keyword">new</span> ArrayList&lt;Person&gt;();  </div><div class="line"></div><div class="line">....  </div><div class="line"></div><div class="line">Map&lt;String,Person&gt; personMaps = Maps.uniqueIndex(personList,<span class="keyword">new</span> Function&lt;Person,String&gt;()&#123;  </div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">public</span> String <span class="title">apply</span><span class="params">(Person person)</span></span>&#123;  </div><div class="line"></div><div class="line">      retuan person.getName();  </div><div class="line"></div><div class="line">   &#125;  </div><div class="line"></div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>2 将properties转换成Map<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Properties properties = <span class="keyword">new</span> Properties();  </div><div class="line"></div><div class="line">........  </div><div class="line"></div><div class="line">Map&lt;String,String&gt; map = Maps.fromProperties(properties);</div></pre></td></tr></table></figure></p>
+<p>3 对Map按照entry进行过滤，过滤出用户地址为“中关村”的map集合  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">    </div><div class="line">Map&lt;String,Person&gt; map = <span class="keyword">new</span> HashMap&lt;String,Person&gt;();  </div><div class="line">    </div><div class="line">Predicate&lt;Entry&lt;String,Person&gt;&gt; perdicate = <span class="keyword">new</span> Predicate&lt;Map.Entry&lt;String,Person&gt;&gt; ()&#123;  </div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(Entry&lt;String,Person&gt; input)</span></span>&#123;  </div><div class="line">    </div><div class="line">       retuen input.getValue().getAddress().equales(<span class="string">"中关村"</span>);  </div><div class="line">    </div><div class="line">     &#125;  </div><div class="line">    </div><div class="line">&#125;  </div><div class="line">    </div><div class="line">Map&lt;String,Person&gt; resultMap = Maps.filterEntries(map,predicate);</div></pre></td></tr></table></figure>
+<p>4 对Map按照key进行过滤<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">    </div><div class="line">Map&lt;String,Person&gt; map = <span class="keyword">new</span> HashMap&lt;String,Person&gt;();  </div><div class="line"></div><div class="line">Predicate&lt;String&gt; perdicate = <span class="keyword">new</span> Predicate&lt;String&gt; ()&#123;  </div><div class="line">    </div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(String input)</span></span>&#123;  </div><div class="line">    </div><div class="line">            retuen input.contains(<span class="string">"gcl"</span>);  </div><div class="line">    </div><div class="line">        &#125;  </div><div class="line">    </div><div class="line">    &#125;  </div><div class="line">    </div><div class="line">Map&lt;String,Person&gt; resultMap = Maps.filterEntries(map,predicate);</div></pre></td></tr></table></figure></p>
+<p>5 对Map按照value进行过滤<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">    </div><div class="line">Map&lt;String,Person&gt; map = <span class="keyword">new</span> HashMap&lt;String,Person&gt;();  </div><div class="line">    </div><div class="line">Predicate&lt;Person&gt; perdicate = <span class="keyword">new</span> Predicate&lt;Person&gt; ()&#123;  </div><div class="line">    </div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(Person input)</span></span>&#123;  </div><div class="line">    </div><div class="line">            retuen input.getAge()&gt;=<span class="number">22</span>;  </div><div class="line">    </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">    </div><div class="line">Map&lt;String,Person&gt; resultMap = Maps.filterEntries(map,predicate);</div></pre></td></tr></table></figure></p>
+<h2 id="RangeMap：key为一个区间的Map"><a href="#RangeMap：key为一个区间的Map" class="headerlink" title="RangeMap：key为一个区间的Map"></a>RangeMap：key为一个区间的Map</h2><p>例如：成绩 85-100评级为A,成绩70-84评级为，成绩60-69为，成绩0-59为D。 </p>
+<pre><code class="java">
+RaneMap&lt;Integer,String&gt; rangeMap = TreeRangeMap.create();  
+
+rangeMap.put(Range.closed(<span class="number">85</span>,<span class="number">100</span>),<span class="string">"A"</span>);  
+
+rangeMap.put(Range.closed(<span class="number">70</span>,<span class="number">84</span>),<span class="string">"C"</span>);  
+
+rangeMap.put(Range.closed(<span class="number">60</span>,<span class="number">69</span>),<span class="string">"B"</span>);  
+
+rangeMap.put(Range.closed(<span class="number">0</span>,<span class="number">59</span>),<span class="string">"D"</span>);  
+
+String level = rangeMap.get(<span class="number">87</span>);
+</code></pre>
+<p>得到结果为；A  </p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在一开始接触guava的时候我是抵触的。当时这样觉得：相比C++，Java的运行速度有点慢，那么Guava是基于Java封装的运行速度肯定比Java慢，所以不应该使用Java。现在回头来看当时的想法真的有点可笑，真是应了一句话：凡是你排斥的就是你要学习的。下面写几个Guava的优点：&lt;br&gt;
+    
+    </summary>
+    
+      <category term="Guava教程" scheme="http://guochenglai.com/categories/Guava%E6%95%99%E7%A8%8B/"/>
+    
+    
+      <category term="Guava教程" scheme="http://guochenglai.com/tags/Guava%E6%95%99%E7%A8%8B/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>netcat 实现不同服务器机器传输文件详解</title>
+    <link href="http://guochenglai.com/2016/08/23/netcat-file-send/"/>
+    <id>http://guochenglai.com/2016/08/23/netcat-file-send/</id>
+    <published>2016-08-23T12:31:08.000Z</published>
+    <updated>2017-05-18T12:49:33.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在日常的开发过程中经常会遇到这种需求：将服务器一上的某个文件拷贝到服务器二机器上。因为服务器的机器都只能和堡垒机（跳板机）通信，所以最开始的做法都是通过scp先将服务器一的文件拷贝到跳板机，然后在将跳板机的文件传递到服务器二，这种做法很原始低效。在一次无意中被一位大神看到，给我介绍了<code>NetCat</code>工具。从此便对齐爱不释手。 </p>
+<h2 id="NetCat简介"><a href="#NetCat简介" class="headerlink" title="NetCat简介"></a>NetCat简介</h2><p>NetCat是一个利用TCP或者UDP网络链接来进行信息读写的程序，被誉为网络工具中的瑞士军刀。我们通常可以利用他来完成以下的几个功能： </p>
+<ul>
+<li>实现不同Linux机器之间文件传输</li>
+<li>制作蜜罐收集客户端信息</li>
+<li>端口扫描</li>
+</ul>
+<p><strong>下面是一些网友对NetCat的功能总结：</strong></p>
+<ul>
+<li>支持连出和连入(outbound and inbound connection)，TCP和UDP，任意源和目的端口</li>
+<li>全部DNS正向/反向检查，给出恰当的警告</li>
+<li>使用任何源端口</li>
+<li>使用任何本地设置的网络资源地址</li>
+<li>内建端口扫描功能，带有随机数发生器</li>
+<li>内建loose source-routing功能</li>
+<li>可能标准输入读取命令行参数</li>
+<li>慢发送模式，每N秒发送一行</li>
+<li>以16进制显示传送或接收的数据</li>
+<li>允许其它程序服务建立连接，可选</li>
+<li>对Telnet应答，可选</li>
+</ul>
+<h2 id="NetCat的安装"><a href="#NetCat的安装" class="headerlink" title="NetCat的安装"></a>NetCat的安装</h2><p>如果机器上面没有netcat可以手动安装<br>centos类系统的安装命令：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">   </div><div class="line">sudo yum install nc</div></pre></td></tr></table></figure>
+<p>deban类系统的安装命令： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">   </div><div class="line">sudo apt-get install nc</div></pre></td></tr></table></figure>
+<h2 id="NetCat参数说明"><a href="#NetCat参数说明" class="headerlink" title="NetCat参数说明"></a>NetCat参数说明</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">-g&lt;网关&gt; 设置路由器跃程通信网关，最丢哦可设置<span class="number">8</span>个。  </div><div class="line">    </div><div class="line">-G&lt;指向器数目&gt; 设置来源路由指向器，其数值为<span class="number">4</span>的倍数。  </div><div class="line">    </div><div class="line">-h 在线帮助。  </div><div class="line">    </div><div class="line">-i&lt;延迟秒数&gt; 设置时间间隔，以便传送信息及扫描通信端口。  </div><div class="line">    </div><div class="line">-l 使用监听模式，管控传入的资料。  </div><div class="line">    </div><div class="line">-n 直接使用IP地址，而不通过域名服务器。  </div><div class="line">    </div><div class="line">-o&lt;输出文件&gt; 指定文件名称，把往来传输的数据以<span class="number">16</span>进制字码倾倒成该文件保存。  </div><div class="line">    </div><div class="line">-p&lt;通信端口&gt; 设置本地主机使用的通信端口。  </div><div class="line">    </div><div class="line">-r 乱数指定本地与远端主机的通信端口。  </div><div class="line">    </div><div class="line">-s&lt;来源位址&gt; 设置本地主机送出数据包的IP地址。  </div><div class="line">    </div><div class="line">-u 使用UDP传输协议。  </div><div class="line">    </div><div class="line">-v 显示指令执行过程。  </div><div class="line">    </div><div class="line">-w&lt;超时秒数&gt; 设置等待连线的时间。  </div><div class="line">    </div><div class="line">-z 使用<span class="number">0</span>输入/输出模式，只在扫描通信端口时使用  </div><div class="line">    </div><div class="line">-k 此参数用在服务器端 用来保证服务器的</div></pre></td></tr></table></figure>
+<h2 id="NetCat实现服务器机器通信"><a href="#NetCat实现服务器机器通信" class="headerlink" title="NetCat实现服务器机器通信"></a>NetCat实现服务器机器通信</h2><p>假设我们需要将服务器一（机器名称 : l-foo.google.com）的文件传送到服务器二（机器名称：l-bar.google.com）上面 </p>
+<h3 id="传递压缩文件夹"><a href="#传递压缩文件夹" class="headerlink" title="传递压缩文件夹"></a>传递压缩文件夹</h3><p>一:服务器一（机器名称 : l-foo.google.com）上面执行：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">tar -zcf - test.google.com/ | nc -l <span class="number">5678</span></div></pre></td></tr></table></figure>
+<p>二: 在服务器二（机器名称：l-bar.google.com）上面执行：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">nc l-foo.google.com <span class="number">5678</span> | sudo tar -xzf -</div></pre></td></tr></table></figure>
+<p>分别在两个机器上执行这两条命令可以发现，在bar机器上已经有了foo机器上的<code>test.qunar.com</code>文件夹 </p>
+<h3 id="传递非压缩文件"><a href="#传递非压缩文件" class="headerlink" title="传递非压缩文件"></a>传递非压缩文件</h3><p>一:服务器一（机器名称 : l-foo.google.com）上面执行： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line">sudo nc -l <span class="number">2222</span> &lt;a.txt</div></pre></td></tr></table></figure>
+<p>二: 在服务器二（机器名称：l-bar.google.com）上面执行： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">sudo nc l-foo.google.com <span class="number">2222</span> &gt; a.txt</div></pre></td></tr></table></figure>
+<p>执行上面两条命令可以发现在服务器bar机器上已经有了foo机器上的<code>a.txt</code>文件 </p>
+<h2 id="NetCat制作蜜罐收集客户端信息"><a href="#NetCat制作蜜罐收集客户端信息" class="headerlink" title="NetCat制作蜜罐收集客户端信息"></a>NetCat制作蜜罐收集客户端信息</h2><p>蜜罐简介：蜜罐形象地描述就是将蜜蜂引入到罐子中，主要用于收集黑客信息。就是我制作一个假的服务器让黑客攻击，然后收集他的信息，用作证据。 </p>
+<p>在foo机器启动一个蜜罐 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">sudo nc -l <span class="number">80</span></div></pre></td></tr></table></figure>
+<p>当黑客攻击如下URL时： </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">http:<span class="comment">//l-foo.google.com/</span></div></pre></td></tr></table></figure>
+<p>foo机器就会得到如下的信息，然后保存起来。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">    GET / HTTP/<span class="number">1.1</span>  </div><div class="line">    </div><div class="line">    Host: l-foo.google.com  </div><div class="line">    </div><div class="line">    Connection: keep-alive  </div><div class="line">    </div><div class="line">    Cache-Control: max-age=<span class="number">0</span>  </div><div class="line">    </div><div class="line">    Accept: text/html,application/xhtml+xml,application/xml;q=<span class="number">0.9</span>,image/webp,*<span class="comment">/*;q=0.8  </span></div><div class="line">    </div><div class="line">    Upgrade-Insecure-Requests: 1  </div><div class="line">    </div><div class="line">    User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.86 Safari/537.36  </div><div class="line">    </div><div class="line">    Accept-Encoding: gzip, deflate, sdch  </div><div class="line">    </div><div class="line">    Accept-Language: zh-CN,zh;q=0.8,en;q=0.6  </div><div class="line">    </div><div class="line">    Cookie: XXX=XXXX;   </div><div class="line">XXXGlobal=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</div></pre></td></tr></table></figure>
+<p>这样你就得到了攻击者的详细信息 </p>
+<h2 id="NetCat进行TCP端口扫描"><a href="#NetCat进行TCP端口扫描" class="headerlink" title="NetCat进行TCP端口扫描"></a>NetCat进行TCP端口扫描</h2><p>扫描foo机器 1到10000端口是否有TCP链接  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">nc -z -w1 -v l-foo.google.com <span class="number">1</span>-<span class="number">10000</span> | grep <span class="string">'succeed'</span> | awk <span class="string">'&#123;print "host:"$3,$4" port has a tcp connect"&#125;'</span></div></pre></td></tr></table></figure>
+<p>得到如下信息：  </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">host:l-foo.google.com <span class="number">22</span> port has a tcp connect  </div><div class="line">host:l-foo.google.com <span class="number">53</span> port has a tcp connect  </div><div class="line">host:l-foo.google.com <span class="number">3306</span> port has a tcp connect  </div><div class="line">host:l-foo.google.com <span class="number">5666</span> port has a tcp connect  </div><div class="line">host:l-foo.google.com <span class="number">8668</span> port has a tcp connect</div></pre></td></tr></table></figure>
+<p>表明： 22，53，3306 … 机器上面有TCP链接。 </p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在日常的开发过程中经常会遇到这种需求：将服务器一上的某个文件拷贝到服务器二机器上。因为服务器的机器都只能和堡垒机（跳板机）通信，所以最开始的做法都是通过scp先将服务器一的文件拷贝到跳板机，然后在将跳板机的文件传递到服务器二，这种做法很原始低效。在一次无意中被一位大神看到，
+    
+    </summary>
+    
+      <category term="Linux常用技巧" scheme="http://guochenglai.com/categories/Linux%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+    
+      <category term="Linux常用技巧" scheme="http://guochenglai.com/tags/Linux%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
+    
+  </entry>
+  
+</feed>
