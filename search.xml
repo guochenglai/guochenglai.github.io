@@ -46,7 +46,50 @@
       <content type="html"><![CDATA[<p>MySQL和大多数数据库不同，MySQL中有一个存储引擎的概念，针对不同的存储需求用户可以选择不同的存储引擎。插件式的存储引擎是MySQL数据库的一个重要特征。用户可以基于此选择如何存储和索引数据… <a id="more"></a></p>
 <h2 id="存储引擎概述"><a href="#存储引擎概述" class="headerlink" title="存储引擎概述"></a>存储引擎概述</h2><p>MySQL5.0之后提供了以下几种存储引擎<code>MyISAM</code>，<code>InnoDB</code>，<code>BDB</code>，<code>Memory</code>,<code>Merge</code>,<code>Example</code>,<code>NDB Cluster</code>,<code>CVS</code>,<code>Blackhole</code>,<code>Federated</code>，其中只有InnoDB和BDB存储引擎支持事物，其他的几种存储引擎。在创建表的时候如果不指定存储引擎，那么会使用默认的存储引擎。MySQL5.5之前默认使用MyIASM存储引擎。在MySQL5.5之后默认使用InnoDB存储引擎。<br>查看默认的存储引擎：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">show variables like &apos;%table_type%&apos;;</div></pre></td></tr></table></figure></p>
 <p>查看数据库所支持的所有存储引擎：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">show engines \G;</div></pre></td></tr></table></figure></p>
-]]></content>
+<p>常用存储引擎对比：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>MyISAM</th>
+<th>InnoDB</th>
+<th>Memory</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>是否支持事物</td>
+<td>否</td>
+<td>是</td>
+<td>否</td>
+</tr>
+<tr>
+<td>是否支持B树索引</td>
+<td>是</td>
+<td>是</td>
+<td>是</td>
+</tr>
+<tr>
+<td>锁粒度</td>
+<td>表锁</td>
+<td>行锁</td>
+<td>表锁</td>
+</tr>
+<tr>
+<td>是否支持外键</td>
+<td>否</td>
+<td>是</td>
+<td>否</td>
+</tr>
+</tbody>
+</table>
+<h2 id="MyISAM详解"><a href="#MyISAM详解" class="headerlink" title="MyISAM详解"></a>MyISAM详解</h2><p>MyISAM存储引擎不支持事务。其优势是访问速度快。所以如果一个表对事务没有要求，并且以Select为主。那么使用MyISAM存储引擎是比较合适的。例如系统的配置信息。情报信息（恶意IP）等等。每张MyISAM表在磁盘上存储三个文件</p>
+<ol>
+<li>frm文件（表的定义文件）</li>
+<li>MYD文件（表的数据存储文件）</li>
+<li>MYI文件（表的索引存储文件）</li>
+</ol>
+<h2 id="InnoDB详解"><a href="#InnoDB详解" class="headerlink" title="InnoDB详解"></a>InnoDB详解</h2><h2 id="Memory详解"><a href="#Memory详解" class="headerlink" title="Memory详解"></a>Memory详解</h2>]]></content>
       
         <categories>
             
