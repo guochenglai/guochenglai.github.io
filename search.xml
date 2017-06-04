@@ -43,8 +43,23 @@
     <entry>
       <title><![CDATA[MySQL之2--存储引擎选择与比较]]></title>
       <url>/2017/04/10/mysql2-engine/</url>
-      <content type="html"></content>
+      <content type="html"><![CDATA[<p>MySQL和大多数数据库不同，MySQL中有一个存储引擎的概念，针对不同的存储需求用户可以选择不同的存储引擎。插件式的存储引擎是MySQL数据库的一个重要特征。用户可以基于此选择如何存储和索引数据… <a id="more"></a></p>
+<h2 id="存储引擎概述"><a href="#存储引擎概述" class="headerlink" title="存储引擎概述"></a>存储引擎概述</h2><p>MySQL5.0之后提供了以下几种存储引擎<code>MyISAM</code>，<code>InnoDB</code>，<code>BDB</code>，<code>Memory</code>,<code>Merge</code>,<code>Example</code>,<code>NDB Cluster</code>,<code>CVS</code>,<code>Blackhole</code>,<code>Federated</code>，其中只有InnoDB和BDB存储引擎支持事物，其他的几种存储引擎。在创建表的时候如果不指定存储引擎，那么会使用默认的存储引擎。MySQL5.5之前默认使用MyIASM存储引擎。在MySQL5.5之后默认使用InnoDB存储引擎。<br>查看默认的存储引擎：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">show variables like &apos;%table_type%&apos;;</div></pre></td></tr></table></figure></p>
+<p>查看数据库所支持的所有存储引擎：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">show engines \G;</div></pre></td></tr></table></figure></p>
+]]></content>
       
+        <categories>
+            
+            <category> MySQL </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> MySQL </tag>
+            
+        </tags>
         
     </entry>
     
