@@ -1,0 +1,352 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description"><title>MySQL之1--MySQL事物隔离级别 | 语言</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/6.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.2/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.2/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-78419105-1','auto');ga('send','pageview');</script></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">MySQL之1--MySQL事物隔离级别</h1><a id="logo" href="/.">语言</a><p class="description">编程是一种美德，是促使一个人不断向上发展的一种原动力. . .</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">MySQL之1--MySQL事物隔离级别</h1><div class="post-meta">Apr 5, 2017<span> | </span><span class="category"><a href="/categories/MySQL/">MySQL</a></span><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span></div><a data-thread-key="2017/04/05/mysql1-isolation-level/" href="/2017/04/05/mysql1-isolation-level/#comments" class="ds-thread-count"></a><div class="clear"><div id="toc" class="toc-article"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#事物及其ACID属性"><span class="toc-text">事物及其ACID属性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#事物的ACID"><span class="toc-text">事物的ACID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#并发事物带来的问题"><span class="toc-text">并发事物带来的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#事物隔离级别"><span class="toc-text">事物隔离级别</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#数据库准备"><span class="toc-text">数据库准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Read-UnCommitted："><span class="toc-text">Read UnCommitted：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Read-UnCommitted脏读问题"><span class="toc-text">Read UnCommitted脏读问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Read-UnCommitted幻读问题"><span class="toc-text">Read UnCommitted幻读问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Read-UnCommitted不可重复读问题"><span class="toc-text">Read UnCommitted不可重复读问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Read-Committed："><span class="toc-text">Read Committed：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Read-Committed脏读问题"><span class="toc-text">Read Committed脏读问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Read-Committed幻读问题"><span class="toc-text">Read Committed幻读问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Read-Committed不可重复读问题"><span class="toc-text">Read Committed不可重复读问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Repeatable-Read："><span class="toc-text">Repeatable Read：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Repeatable-Read脏读问题"><span class="toc-text">Repeatable Read脏读问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Repeatable-Read幻读问题"><span class="toc-text">Repeatable Read幻读问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Repeatable-Read不可重复读问题"><span class="toc-text">Repeatable Read不可重复读问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Serializable："><span class="toc-text">Serializable：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#事物隔离级别问题总结"><span class="toc-text">事物隔离级别问题总结</span></a></li></ol></div></div><div class="post-content"><p>看了一段时间的MySQL方面的书籍，想把看过的东西总结一下分享出来，一方面是希望可以和大家沟通交流，另一方面对自已也是一个总结升华的过程。<a id="more"></a><font color="red">注意：如果没有特殊说明本系列所有文章都是以Innodb存储引擎来说明。</font></p>
+<h2 id="事物及其ACID属性"><a href="#事物及其ACID属性" class="headerlink" title="事物及其ACID属性"></a>事物及其ACID属性</h2><h3 id="事物的ACID"><a href="#事物的ACID" class="headerlink" title="事物的ACID"></a>事物的ACID</h3><p>事物是有一组SQL语句组成的逻辑处理单元，事物具有ACID四个属性。</p>
+<ul>
+<li>原子性：事物是一个原子操作单位，其对数据的修改要么全部执行，要么全部不执行。</li>
+<li>一致性：在事物开始和完成时数据都必须保持一致的状态。可以这样理解。MySQL中的B+树索引缓存，和数据的存储，在事物开始前和结束后都是对应一致的。</li>
+<li>隔离性：一个事物处理过程中的中间状态对另外一个事物是不可见的。</li>
+<li>持久性：事物完成之后。修改的数据是持久性的，即使出现故障，数据也能持久性保存。</li>
+</ul>
+<h3 id="并发事物带来的问题"><a href="#并发事物带来的问题" class="headerlink" title="并发事物带来的问题"></a>并发事物带来的问题</h3><p>众所周知，MySQL的并发事物处理大大增加了数据库资源的利用率。但是同时也带来了如下的几个问题：</p>
+<ul>
+<li>丢失更新：当多个事物选择同一行进行更改时，由于每个事物都不知道其他事物的存在，就会发生丢失更新的问题。最后更新覆盖了其他事物的更新。</li>
+<li>脏读：一个事物正在对一条记录做修改，在这个事物未提交之前，第二个事物也来读取这条记录。如果不加控制，第二个事物读取的数据就是脏数据。</li>
+<li>不可重复读：一个事物读取某些数据之后，隔一段时间之后再次读取这些数据，却发现这些数据已经修改或者删除了。</li>
+<li>幻读：一个事物按照相同的查询条件重复读取以前检索的数据，却发现获得的数据集不一样，因为有其他事物进行了数据的修改并提交了修改操作。</li>
+</ul>
+<h2 id="事物隔离级别"><a href="#事物隔离级别" class="headerlink" title="事物隔离级别"></a>事物隔离级别</h2><p>如上看到了并发修改带来的四个问题。“丢失更新”并不能单靠数据库来解决。这个应该是应用程序的事情。必须由应用程序来应用程序通过加锁来解决。而“脏读”、“不可重复读”、“幻读”，都是数据库读一致性的问题，需数据库提供。不同的事物隔离级别，效率不同，带来的并发问题也不一样。</p>
+<h3 id="数据库准备"><a href="#数据库准备" class="headerlink" title="数据库准备"></a>数据库准备</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">create</span> <span class="keyword">table</span> translation_test(</div><div class="line">   <span class="keyword">id</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">not</span> <span class="literal">null</span> auto_increment primary <span class="keyword">key</span> <span class="keyword">comment</span> <span class="string">'自增ID'</span>,</div><div class="line">   <span class="keyword">name</span> <span class="built_in">varchar</span>(<span class="number">32</span>)  <span class="keyword">not</span> <span class="literal">null</span> <span class="keyword">default</span> <span class="string">''</span> <span class="keyword">comment</span> <span class="string">'姓名'</span>,</div><div class="line">   age <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">not</span> <span class="literal">null</span> <span class="keyword">default</span> <span class="number">0</span> <span class="keyword">comment</span> <span class="string">'年龄'</span></div><div class="line">) <span class="keyword">engine</span>=<span class="keyword">InnoDB</span> <span class="keyword">default</span> <span class="keyword">charset</span>=utf8mb4 ;</div><div class="line"></div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> translation_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'zhangsan'</span>,<span class="number">22</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> translation_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'lisi'</span>,<span class="number">20</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> translation_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'wangwu'</span>,<span class="number">26</span>);</div></pre></td></tr></table></figure>
+<p>表中数据如下：<br><img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965459195438.jpg?imageView2/0/format/jpg" alt=""></p>
+<h3 id="Read-UnCommitted："><a href="#Read-UnCommitted：" class="headerlink" title="Read UnCommitted："></a>Read UnCommitted：</h3><p>由于MySQL默认的事物隔离级别是Repeatable Read。所以这里首先将MySQL的事物隔离级别设置为<code>Read UnCommitted</code>。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SET</span> <span class="keyword">session</span> <span class="keyword">transaction</span> <span class="keyword">isolation</span> <span class="keyword">level</span> <span class="keyword">read</span> uncommitted;</div></pre></td></tr></table></figure></p>
+<h4 id="Read-UnCommitted脏读问题"><a href="#Read-UnCommitted脏读问题" class="headerlink" title="Read UnCommitted脏读问题"></a>Read UnCommitted脏读问题</h4><table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>update translation_test set age = 0 where id = 1; <br> select * from translation_test where id =1; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654611215351.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where id =1; <br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654617147485.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td>commit;</td>
+</tr>
+</tbody>
+</table>
+<p>以上代码的处理逻辑是：</p>
+<ol>
+<li>打开两个MySQL的终端，修改当前session的事务隔离级别为：Read Uncommit。</li>
+<li>在事务A中执行修改ID为1的记录的数据，并执行查询。在事务B中查询ID为1的记录的数据。</li>
+<li>提交两个事务。<br><code>这里事物B查询到了事务A未提交的数据。所以Read UnCommitted 会出现脏读</code> </li>
+</ol>
+<h4 id="Read-UnCommitted幻读问题"><a href="#Read-UnCommitted幻读问题" class="headerlink" title="Read UnCommitted幻读问题"></a>Read UnCommitted幻读问题</h4><table>
+<thead>
+<tr>
+<th>事物A</th>
+<th>事物B </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into translation_test(name,age)values(‘gcl’,20);</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果并不一样。这是因为事物B提交了Insert事物。所以Read UnCommitted会出现幻读</code></p>
+<h4 id="Read-UnCommitted不可重复读问题"><a href="#Read-UnCommitted不可重复读问题" class="headerlink" title="Read UnCommitted不可重复读问题"></a>Read UnCommitted不可重复读问题</h4><table>
+<thead>
+<tr>
+<th>事物A</th>
+<th>事物B </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age =20 ; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654955855189.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>update translation_test set age =21 where id =1;</td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td> select * from translation_test where age =20 ;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654969574883.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td> commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果并不一样。这是因为事物B提交了Update事物。所以Read UnCommitted会出现不可重复读问题</code></p>
+<font color="red">说明：<br>好多人不能区分幻读和不可重复读。其实区分情况很简单，幻读主要是针对Insert的情况。不可重复读主要是针对Update和Delete情况 </font>
+
+<h3 id="Read-Committed："><a href="#Read-Committed：" class="headerlink" title="Read Committed："></a>Read Committed：</h3><p>设置事务的隔离级别为<code>Read Committed</code><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SET</span> <span class="keyword">session</span> <span class="keyword">transaction</span> <span class="keyword">isolation</span> <span class="keyword">level</span> <span class="keyword">read</span> committed;</div></pre></td></tr></table></figure></p>
+<h4 id="Read-Committed脏读问题"><a href="#Read-Committed脏读问题" class="headerlink" title="Read Committed脏读问题"></a>Read Committed脏读问题</h4><table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>update translation_test set age = -1 where id = 1; <br> select * from translation_test where id =1; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654676644212.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where id =1; <br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654681787849.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td>commit;</td>
+</tr>
+</tbody>
+</table>
+<p><code>这里事物B查询不到事务A未提交的数据。所以Read Committed 不会出现脏读</code></p>
+<h4 id="Read-Committed幻读问题"><a href="#Read-Committed幻读问题" class="headerlink" title="Read Committed幻读问题"></a>Read Committed幻读问题</h4><table>
+<thead>
+<tr>
+<th>事物A</th>
+<th>事物B </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into translation_test(name,age)values(‘gcl’,20);</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果并不一样。这是因为事物B提交了Insert事物。所以Read Committed会出现幻读</code></p>
+<h4 id="Read-Committed不可重复读问题"><a href="#Read-Committed不可重复读问题" class="headerlink" title="Read Committed不可重复读问题"></a>Read Committed不可重复读问题</h4><p>为了更好演示不可重复读的情况。我们将数据修改如下。<br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654784981410.jpg?imageView2/0/format/jpg" alt=""><br>事物A | 事物B<br>—|—<br>begin; | begin;<br>select <em> from translation_test where age =20 ; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654955855189.jpg?imageView2/0/format/jpg" alt="">|<br> | update translation_test set age =21 where id =1;<br> | commit;<br> select </em> from translation_test where age =20 ;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654969574883.jpg?imageView2/0/format/jpg" alt="">|<br> commit;|<br><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果并不一样。这是因为事物B提交了Update事务。所以ReadCommit会出现不可重复读问题。</code></p>
+<h3 id="Repeatable-Read："><a href="#Repeatable-Read：" class="headerlink" title="Repeatable Read："></a>Repeatable Read：</h3><p>设置事物的隔离级别为<code>Repeatable Read</code><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SET</span> <span class="keyword">session</span> <span class="keyword">transaction</span> <span class="keyword">isolation</span> <span class="keyword">level</span> repeatable <span class="keyword">read</span>;</div></pre></td></tr></table></figure></p>
+<h4 id="Repeatable-Read脏读问题"><a href="#Repeatable-Read脏读问题" class="headerlink" title="Repeatable Read脏读问题"></a>Repeatable Read脏读问题</h4><table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>update translation_test set age = -1 where id = 1; <br> select * from translation_test where id =1; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654676644212.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where id =1; <br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654681787849.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td>commit;</td>
+</tr>
+</tbody>
+</table>
+<p><code>这里事物B查询不到事务A未提交的数据。所以Repeatable Read 不会出现脏读</code></p>
+<h4 id="Repeatable-Read幻读问题"><a href="#Repeatable-Read幻读问题" class="headerlink" title="Repeatable Read幻读问题"></a>Repeatable Read幻读问题</h4><table>
+<thead>
+<tr>
+<th>事物A</th>
+<th>事物B </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into translation_test(name,age)values(‘gcl’,20);</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果并不一样。这是因为事物B提交了Insert事物。所以Repeatable Read会出现幻读</code></p>
+<h4 id="Repeatable-Read不可重复读问题"><a href="#Repeatable-Read不可重复读问题" class="headerlink" title="Repeatable Read不可重复读问题"></a>Repeatable Read不可重复读问题</h4><table>
+<thead>
+<tr>
+<th>事物A</th>
+<th>事物B </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age =20 ; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654955855189.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>update translation_test set age =21 where id =1;</td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td> select * from translation_test where age =20 ;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654969574883.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td> commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果是不一样的。所以Repeatable Read 不会出现不可重复读问题（不可重复读就是为了解决这个问题）。</code></p>
+<h3 id="Serializable："><a href="#Serializable：" class="headerlink" title="Serializable："></a>Serializable：</h3><p>Serializable事物隔离级别中。所有的事物都串行执行。这种情况下，不会出现并发事物带来的问题。但是效率也是最低的。</p>
+<h2 id="事物隔离级别问题总结"><a href="#事物隔离级别问题总结" class="headerlink" title="事物隔离级别问题总结"></a>事物隔离级别问题总结</h2><table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>脏读（Dirty Read）</th>
+<th>不可重复读（NonRepeatable Read）</th>
+<th>幻读（Phantom Read）  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>未提交读（Read uncommitted）</td>
+<td>可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>已提交读（Read committed）</td>
+<td>不可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>可重复读（Repeatable read）</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>可串行化（Serializable ）</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>不可能</td>
+</tr>
+</tbody>
+</table>
+</div><div class="tags"><a href="/tags/MySQL/">MySQL</a></div><div class="post-nav"><a href="/2017/04/10/mysql2-engine/" class="pre">MySQL之2--存储引擎选择与比较</a><a href="/2017/02/17/javafx-deploy-exe-dmg-file/" class="next">javafx打包为执行的exe/dmg文件</a></div><div data-thread-key="2017/04/05/mysql1-isolation-level/" data-title="MySQL之1--MySQL事物隔离级别" data-url="http://guochenglai.com/2017/04/05/mysql1-isolation-level/" class="ds-share flat"><div class="ds-share-inline"><ul class="ds-share-icons-16"><li data-toggle="ds-share-icons-more"><a href="javascript:void(0);" class="ds-more">分享到：</a></li><li><a href="javascript:void(0);" data-service="weibo" class="ds-weibo">微博</a></li><li><a href="javascript:void(0);" data-service="qzone" class="ds-qzone">QQ空间</a></li><li><a href="javascript:void(0);" data-service="qqt" class="ds-qqt">腾讯微博</a></li><li><a href="javascript:void(0);" data-service="wechat" class="ds-wechat">微信</a></li></ul><div class="ds-share-icons-more"></div></div></div><div data-thread-key="2017/04/05/mysql1-isolation-level/" data-title="MySQL之1--MySQL事物隔离级别" data-url="http://guochenglai.com/2017/04/05/mysql1-isolation-level/" data-author-key="1" class="ds-thread"></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="search-form"><input id="local-search-input" placeholder="Search" type="text" name="q" results="0"/><div id="local-search-result"></div></div></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Guava教程/">Guava教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/Java命令工具/">Java命令工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Java/Java并发编程/">Java并发编程</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/Java并发编程/源码分析/">源码分析</a></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux常用技巧/">Linux常用技巧</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mac常用技巧/">Mac常用技巧</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Mac常用技巧/软件破解/">软件破解</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Mybatis/">Mybatis</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/字符编码/">字符编码</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据结构面试精选/">数据结构面试精选</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/杂谈/">杂谈</a></li></ul></div><div class="widget"><div class="comments-title"><i class="fa fa-comment-o"> 最近评论</i></div><div data-num-items="5" data-show-avatars="0" data-show-time="1" data-show-admin="0" data-excerpt-length="32" data-show-title="1" class="ds-recent-comments"></div></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://blog.csdn.net/gcl272633743" title="我的CSDN博客" target="_blank">我的CSDN博客</a><ul></ul><a href="https://github.com/guochenglai/guochenglai.github.io" title="我的GitHub" target="_blank">我的GitHub</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2017 <a href="/." rel="nofollow">语言.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.0.47/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.0.47/jquery.fancybox.min.css"><script>var duoshuoQuery = {short_name:'guochenglai'};
+(function() {
+    var ds = document.createElement('script');
+    ds.type = 'text/javascript';ds.async = true;
+    ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+    ds.charset = 'UTF-8';
+    (document.getElementsByTagName('head')[0]
+        || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+</script><script type="text/javascript" src="/js/search.js?v=0.0.0"></script><script>var search_path = 'search.xml';
+if (search_path.length == 0) {
+   search_path = 'search.xml';
+}
+var path = '/' + search_path;
+searchFunc(path, 'local-search-input', 'local-search-result');
+</script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?dddca6123bb9b862f15d6a9178ad4a2d";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();
+</script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+  });
+</script><script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML" async></script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>

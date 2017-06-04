@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://guochenglai.com/"/>
-  <updated>2017-05-29T12:45:35.000Z</updated>
+  <updated>2017-06-04T10:25:14.000Z</updated>
   <id>http://guochenglai.com/</id>
   
   <author>
@@ -14,6 +14,408 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MySQL之3--MySQL索引优化、SQL优化、慢查询分析</title>
+    <link href="http://guochenglai.com/2017/05/04/mysql3-index-anaysis/"/>
+    <id>http://guochenglai.com/2017/05/04/mysql3-index-anaysis/</id>
+    <published>2017-05-04T02:54:20.000Z</published>
+    <updated>2017-06-04T10:25:14.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="配置环境说明"><a href="#配置环境说明" class="headerlink" title="配置环境说明"></a><em>配置环境说明</em></h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Mysql的版本信息：<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explian_db_version.png" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;操作系统版本信息：<br>  <img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explain_system_version.png?imageView2/2/w/400" alt=""></p>
+<h2 id="索引的分析"><a href="#索引的分析" class="headerlink" title="索引的分析"></a><em>索引的分析</em></h2><h3 id="数据的准备"><a href="#数据的准备" class="headerlink" title="数据的准备"></a><em>数据的准备</em></h3><h4 id="数据库的建表SQL"><a href="#数据库的建表SQL" class="headerlink" title="数据库的建表SQL"></a><em>数据库的建表SQL</em></h4><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;表的说明：id是自增主键，name是唯一索引，age 是非唯一索引，desc无索引。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`index_test`</span> (  </div><div class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT <span class="keyword">COMMENT</span> <span class="string">'自增ID'</span>,  </div><div class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">128</span>) <span class="keyword">COLLATE</span> utf8_bin <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'名字'</span>,  </div><div class="line">  <span class="string">`age`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'年龄'</span>,  </div><div class="line">  <span class="string">`desc`</span> <span class="built_in">varchar</span>(<span class="number">128</span>) <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> utf8 <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'描述'</span>,  </div><div class="line">  <span class="string">`status`</span> tinyint(<span class="number">4</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">COMMENT</span> <span class="string">'状态'</span>,  </div><div class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),  </div><div class="line">  <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> <span class="string">`uniq_name`</span> (<span class="string">`name`</span>),  </div><div class="line">  <span class="keyword">KEY</span> <span class="string">`idx_age`</span> (<span class="string">`age`</span>)  </div><div class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8 ;</div></pre></td></tr></table></figure></p>
+<h4 id="表中测试数据"><a href="#表中测试数据" class="headerlink" title="表中测试数据"></a><em>表中测试数据</em></h4><p><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explian_test_data.png" alt=""></p>
+<h3 id="索引的分析-1"><a href="#索引的分析-1" class="headerlink" title="索引的分析"></a><em>索引的分析</em></h3><h4 id="使用explain查看sql的执行计划"><a href="#使用explain查看sql的执行计划" class="headerlink" title="使用explain查看sql的执行计划"></a><em>使用explain查看sql的执行计划</em></h4><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在MySQL中可以在sql前面加上explain语句，来显示该条SQL的执行计划，输出内容如下：<img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explian.png" alt=""></p>
+<h4 id="explain详解"><a href="#explain详解" class="headerlink" title="explain详解"></a><em>explain详解</em></h4><h5 id="select-type"><a href="#select-type" class="headerlink" title="select_type"></a><em>select_type</em></h5><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;select_type表示查询语句的类型，取值主要有以下几种:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;simple：表示是简单的单表查询<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;primary：表示子查询的外表<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;derived：派生表的查询<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_select_type_derived.png" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;subquery: 子查询的内部第一个SQL<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_select_type_subquery.png" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;union：表示union操作被连接的表<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;union result：表示连接操作之后的结果表<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_select_type_union.png" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;depend union 表示子查询中union语句<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;depend subquery 表示子查询中生成的结果<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_select_type_dependent_subquery_union_union_all.png" alt=""> </p>
+<h5 id="table"><a href="#table" class="headerlink" title="table"></a><em>table</em></h5><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当前SQL查询涉及到的表的表名，<font color="red">注意:这里有时候是中间结果表的表名，MySQL会按照自己的规则生成</font></p>
+<h5 id="type"><a href="#type" class="headerlink" title="type"></a><em>type</em></h5><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type的取值在很大的程度上反应了SQL的执行性能。<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;按照性能由高到底，type的取值依次为：NULL，system，const，eq_reg，ref，range，index，ALL<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>NULL 不用查表，速度最快</em><br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explian_null.png" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>system 当表中只有一条数据的时候 type为system</em><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>const 常数查询 一般是根据唯一键或者主键等值查询</em><br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explain_const.png" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>eq_reg 表连接的时候 在b表查询出来的结果在a表这中按照唯一索引值查询一行</em><br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explian_eq_ref.png" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>reg 非唯一索引查询</em><br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explain_ref.png" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>range 使用唯一索引返回扫描</em><br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explian_range.png" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>index 扫描整个索引文件，例如覆盖索引的查询，效率只是比全表查询略快，因为索引文件一般比数据文件小，所以一次读入内存的索引数据更多，这样磁盘IO就会更少</em><br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explain_full_index.png" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>All 表示全表扫描，是效率最低的一种查询</em></p>
+<h5 id="possible-key"><a href="#possible-key" class="headerlink" title="possible key"></a><em>possible key</em></h5><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;表示可能使用的索引，显示的顺序与表连接的顺序无关。</p>
+<h5 id="key"><a href="#key" class="headerlink" title="key"></a><em>key</em></h5><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;表示MySQL执行本条sql选的索引的名字，可以通过force idex 和 ignore index 来强制改变sql执行所需要的索引。</p>
+<h5 id="key-len"><a href="#key-len" class="headerlink" title="key_len"></a><em>key_len</em></h5><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;表示该条索引的占用的自己树，是根据索引字段的类型计算出来的，<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;例如:int(11)索引长度是4<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;varchar(128)并且编码是U8，索引长度的计算方法为 ： 128*3+2 </p>
+<h5 id="ref"><a href="#ref" class="headerlink" title="ref"></a><em>ref</em></h5><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;表示使用哪个列从表中选择行，取值有科恩个是const</p>
+<h5 id="rows"><a href="#rows" class="headerlink" title="rows"></a><em>rows</em></h5><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;表示执行该条SQL必须扫描的行数</p>
+<h5 id="extra"><a href="#extra" class="headerlink" title="extra"></a><em>extra</em></h5><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;包含了MySQL生成执行计划的详细信息：<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;distinct 查找唯一值，一旦找到就不在继续查找了（暂时没有想好例子）<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;record 没有找到理想的索引<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use file sort 使用外排来排序  效率比较低<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use index 使用覆盖索引返回数据，没有扫描表<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use tempoary 使用临时表来组合返回数据 效率较低<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use where 使用where条件过滤返回的数据，在MySQL的存储引擎层没有过滤完数据，只能在MySQL服务层去过滤数据</p>
+<h4 id="profiling详解"><a href="#profiling详解" class="headerlink" title="profiling详解"></a><em>profiling详解</em></h4><h5 id="开启profiling"><a href="#开启profiling" class="headerlink" title="开启profiling"></a><em>开启profiling</em></h5><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;因为profiling是比较消耗资源的，所以一般的MySQL默认都关闭了profiling功能，并且profiling只是针对当前session有效，目前不支持全局的profiling，可以通过如下的命令查看并开发profiling功能：<br> <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"> <span class="keyword">SELECT</span> @@profiling  <span class="comment">-- 返回的结果如果是0 表示当前的session的profiling功能是关闭的  </span></div><div class="line"><span class="keyword">set</span> profiling=<span class="number">1</span>  <span class="comment">-- 打开当前session的profiling功能</span></div></pre></td></tr></table></figure></p>
+<h5 id="profiling的使用"><a href="#profiling的使用" class="headerlink" title="profiling的使用"></a><em>profiling的使用</em></h5><h6 id="查询当前session的profiling的概要信息"><a href="#查询当前session的profiling的概要信息" class="headerlink" title="查询当前session的profiling的概要信息"></a><em>查询当前session的profiling的概要信息</em></h6><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;可以使用 show profiles命令获取当前session所执行的sql的概要信息：<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_profiling_show.png" alt=""></p>
+<h6 id="profiling详解-1"><a href="#profiling详解-1" class="headerlink" title="profiling详解"></a><em>profiling详解</em></h6><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;profiling的语法如下：<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SHOW</span> PROFILE [<span class="keyword">type</span> [, <span class="keyword">type</span>] ... ]  </div><div class="line">    [<span class="keyword">FOR</span> <span class="keyword">QUERY</span> n]  </div><div class="line">    [<span class="keyword">LIMIT</span> <span class="keyword">row_count</span> [<span class="keyword">OFFSET</span> <span class="keyword">offset</span>]]  </div><div class="line"><span class="keyword">type</span>:  </div><div class="line">    ALL  </div><div class="line">  | <span class="keyword">BLOCK</span> IO  </div><div class="line">  | <span class="keyword">CONTEXT</span> SWITCHES  </div><div class="line">  | CPU  </div><div class="line">  | IPC  </div><div class="line">  | <span class="keyword">MEMORY</span>  </div><div class="line">  | PAGE FAULTS  </div><div class="line">  | <span class="keyword">SOURCE</span>  </div><div class="line">  | SWAPS</div></pre></td></tr></table></figure></p>
+<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;使用示例：<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_profiling.png" alt=""><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;结果说明：<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在使用profiling查看sql的详细执行计划的时候，主要关注的是前两列即：status和duration<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;status 表示sql的执行状态和 show full process list 查看到的状态一致<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;duration 表示每个状态执行的时间 可以看到sql的主要执行时间消耗在哪里<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;其次需要关注的是cup，io,swap的详细信息<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cup表示 cpu的消耗时间<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;swap表示机器的swap情况<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;io表示io的消耗情况</p>
+<h2 id="无效索引"><a href="#无效索引" class="headerlink" title="无效索引"></a><em>无效索引</em></h2><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在很多时候MySQL的表建立了索引，并且在查询条件中也使用了索引进行筛选，但是并不一定会使用到索引，例如下面的几种情况。</p>
+<h3 id="筛选条件包含了隐式转换"><a href="#筛选条件包含了隐式转换" class="headerlink" title="筛选条件包含了隐式转换"></a><em>筛选条件包含了隐式转换</em></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;下面的例子中，name字段添加了唯一索引，但是name字段的类型是varchar类型的，而筛选添加时int类型，发生了隐式转换，所以走全表扫描。这里比较隐晦。在上周有一个项目分析酒店订单的时候，本来hive中的酒店订单包含了酒店项目的所有订单，订单id是varchar类型的，而我们需要统计QTA中参加某一个活动的订单，需要查询QTA的订单详情库，（QTA订单详情是hive中订单的子集）里面的订单ID是long类型的，最开始查询的时候就直接在一个表查询完后再另外一个表查询，结果看到一条简单的sql执行起来巨慢。最后分析原因就定位到了这个上面。<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explain_convert_all.png" alt=""></p>
+<h3 id="不支持函数式索引"><a href="#不支持函数式索引" class="headerlink" title="不支持函数式索引"></a><em>不支持函数式索引</em></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;age字段上面添加了非唯一索引，但是使用了绝对值函数，所以age字段上面的索引就无法使用了。这个在处理日期的时候经常遇到这样的坑。<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explian_function_all.png" alt=""></p>
+<h3 id="索引扫描的代价大于直接全表扫描"><a href="#索引扫描的代价大于直接全表扫描" class="headerlink" title="索引扫描的代价大于直接全表扫描"></a><em>索引扫描的代价大于直接全表扫描</em></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;如果只有索引过滤的数据比较少，那么会直接走全表扫描，因为使用索引的时候会先扫描一遍索引，然后根据扫描到的索引回表找到所需要的数据，这样扫描的效率其实更低，所以直接走全表扫描。<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explian_all_index.png" alt=""></p>
+<h3 id="使用“-”前缀匹配的时候"><a href="#使用“-”前缀匹配的时候" class="headerlink" title="使用“%”前缀匹配的时候"></a><em>使用“%”前缀匹配的时候</em></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name字段添加了唯一索引 但是使用‘%’作为前缀匹配条件，所以不使用索引，直接走全表扫描。<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explian_all_like.png" alt=""></p>
+<h3 id="复合索引非左前缀匹配"><a href="#复合索引非左前缀匹配" class="headerlink" title="复合索引非左前缀匹配"></a><em>复合索引非左前缀匹配</em></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在使用复合索引的时候 如果不是使用的左前缀筛选条件 则不会使用索引，还是会全表扫描。</p>
+<h3 id="or筛选添加前后都有索引的时候才会走索引"><a href="#or筛选添加前后都有索引的时候才会走索引" class="headerlink" title="or筛选添加前后都有索引的时候才会走索引"></a><em>or筛选添加前后都有索引的时候才会走索引</em></h3><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;在使用or作为筛选条件的时候，or的前后筛选条件都必须添加索引 这样才能使用索引 否则 整条sql都无法使用索引。<br><img src="http://7xutce.com1.z0.glb.clouddn.com/mysql_explain_all_or.png" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      本文基于Mysql5.6主要介绍了MySQL的索引分析工具--explain和profiling。并利用MySQL的索引分析工具，对MySQL的索引进行分析，通过观察MySQL索引分析的过程，可以看到常见的索引优化点，以及在使用索引的时候的常见问题。本文的最后部分介绍了MySQL的无效索引（什么时候你为这个字段添加了索引，但是却无法使用）....
+    
+    </summary>
+    
+      <category term="MySQL" scheme="http://guochenglai.com/categories/MySQL/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>MySQL之2--存储引擎选择与比较</title>
+    <link href="http://guochenglai.com/2017/04/10/mysql2-engine/"/>
+    <id>http://guochenglai.com/2017/04/10/mysql2-engine/</id>
+    <published>2017-04-10T04:36:08.000Z</published>
+    <updated>2017-06-04T10:24:53.000Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>MySQL之1--MySQL事物隔离级别</title>
+    <link href="http://guochenglai.com/2017/04/05/mysql1-isolation-level/"/>
+    <id>http://guochenglai.com/2017/04/05/mysql1-isolation-level/</id>
+    <published>2017-04-05T04:13:58.000Z</published>
+    <updated>2017-06-04T10:26:59.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>看了一段时间的MySQL方面的书籍，想把看过的东西总结一下分享出来，一方面是希望可以和大家沟通交流，另一方面对自已也是一个总结升华的过程。<a id="more"></a><font color="red">注意：如果没有特殊说明本系列所有文章都是以Innodb存储引擎来说明。</font></p>
+<h2 id="事物及其ACID属性"><a href="#事物及其ACID属性" class="headerlink" title="事物及其ACID属性"></a>事物及其ACID属性</h2><h3 id="事物的ACID"><a href="#事物的ACID" class="headerlink" title="事物的ACID"></a>事物的ACID</h3><p>事物是有一组SQL语句组成的逻辑处理单元，事物具有ACID四个属性。</p>
+<ul>
+<li>原子性：事物是一个原子操作单位，其对数据的修改要么全部执行，要么全部不执行。</li>
+<li>一致性：在事物开始和完成时数据都必须保持一致的状态。可以这样理解。MySQL中的B+树索引缓存，和数据的存储，在事物开始前和结束后都是对应一致的。</li>
+<li>隔离性：一个事物处理过程中的中间状态对另外一个事物是不可见的。</li>
+<li>持久性：事物完成之后。修改的数据是持久性的，即使出现故障，数据也能持久性保存。</li>
+</ul>
+<h3 id="并发事物带来的问题"><a href="#并发事物带来的问题" class="headerlink" title="并发事物带来的问题"></a>并发事物带来的问题</h3><p>众所周知，MySQL的并发事物处理大大增加了数据库资源的利用率。但是同时也带来了如下的几个问题：</p>
+<ul>
+<li>丢失更新：当多个事物选择同一行进行更改时，由于每个事物都不知道其他事物的存在，就会发生丢失更新的问题。最后更新覆盖了其他事物的更新。</li>
+<li>脏读：一个事物正在对一条记录做修改，在这个事物未提交之前，第二个事物也来读取这条记录。如果不加控制，第二个事物读取的数据就是脏数据。</li>
+<li>不可重复读：一个事物读取某些数据之后，隔一段时间之后再次读取这些数据，却发现这些数据已经修改或者删除了。</li>
+<li>幻读：一个事物按照相同的查询条件重复读取以前检索的数据，却发现获得的数据集不一样，因为有其他事物进行了数据的修改并提交了修改操作。</li>
+</ul>
+<h2 id="事物隔离级别"><a href="#事物隔离级别" class="headerlink" title="事物隔离级别"></a>事物隔离级别</h2><p>如上看到了并发修改带来的四个问题。“丢失更新”并不能单靠数据库来解决。这个应该是应用程序的事情。必须由应用程序来应用程序通过加锁来解决。而“脏读”、“不可重复读”、“幻读”，都是数据库读一致性的问题，需数据库提供。不同的事物隔离级别，效率不同，带来的并发问题也不一样。</p>
+<h3 id="数据库准备"><a href="#数据库准备" class="headerlink" title="数据库准备"></a>数据库准备</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">create</span> <span class="keyword">table</span> translation_test(</div><div class="line">   <span class="keyword">id</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">not</span> <span class="literal">null</span> auto_increment primary <span class="keyword">key</span> <span class="keyword">comment</span> <span class="string">'自增ID'</span>,</div><div class="line">   <span class="keyword">name</span> <span class="built_in">varchar</span>(<span class="number">32</span>)  <span class="keyword">not</span> <span class="literal">null</span> <span class="keyword">default</span> <span class="string">''</span> <span class="keyword">comment</span> <span class="string">'姓名'</span>,</div><div class="line">   age <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">not</span> <span class="literal">null</span> <span class="keyword">default</span> <span class="number">0</span> <span class="keyword">comment</span> <span class="string">'年龄'</span></div><div class="line">) <span class="keyword">engine</span>=<span class="keyword">InnoDB</span> <span class="keyword">default</span> <span class="keyword">charset</span>=utf8mb4 ;</div><div class="line"></div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> translation_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'zhangsan'</span>,<span class="number">22</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> translation_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'lisi'</span>,<span class="number">20</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> translation_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'wangwu'</span>,<span class="number">26</span>);</div></pre></td></tr></table></figure>
+<p>表中数据如下：<br><img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965459195438.jpg?imageView2/0/format/jpg" alt=""></p>
+<h3 id="Read-UnCommitted："><a href="#Read-UnCommitted：" class="headerlink" title="Read UnCommitted："></a>Read UnCommitted：</h3><p>由于MySQL默认的事物隔离级别是Repeatable Read。所以这里首先将MySQL的事物隔离级别设置为<code>Read UnCommitted</code>。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SET</span> <span class="keyword">session</span> <span class="keyword">transaction</span> <span class="keyword">isolation</span> <span class="keyword">level</span> <span class="keyword">read</span> uncommitted;</div></pre></td></tr></table></figure></p>
+<h4 id="Read-UnCommitted脏读问题"><a href="#Read-UnCommitted脏读问题" class="headerlink" title="Read UnCommitted脏读问题"></a>Read UnCommitted脏读问题</h4><table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>update translation_test set age = 0 where id = 1; <br> select * from translation_test where id =1; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654611215351.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where id =1; <br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654617147485.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td>commit;</td>
+</tr>
+</tbody>
+</table>
+<p>以上代码的处理逻辑是：</p>
+<ol>
+<li>打开两个MySQL的终端，修改当前session的事务隔离级别为：Read Uncommit。</li>
+<li>在事务A中执行修改ID为1的记录的数据，并执行查询。在事务B中查询ID为1的记录的数据。</li>
+<li>提交两个事务。<br><code>这里事物B查询到了事务A未提交的数据。所以Read UnCommitted 会出现脏读</code> </li>
+</ol>
+<h4 id="Read-UnCommitted幻读问题"><a href="#Read-UnCommitted幻读问题" class="headerlink" title="Read UnCommitted幻读问题"></a>Read UnCommitted幻读问题</h4><table>
+<thead>
+<tr>
+<th>事物A</th>
+<th>事物B </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into translation_test(name,age)values(‘gcl’,20);</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果并不一样。这是因为事物B提交了Insert事物。所以Read UnCommitted会出现幻读</code></p>
+<h4 id="Read-UnCommitted不可重复读问题"><a href="#Read-UnCommitted不可重复读问题" class="headerlink" title="Read UnCommitted不可重复读问题"></a>Read UnCommitted不可重复读问题</h4><table>
+<thead>
+<tr>
+<th>事物A</th>
+<th>事物B </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age =20 ; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654955855189.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>update translation_test set age =21 where id =1;</td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td> select * from translation_test where age =20 ;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654969574883.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td> commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果并不一样。这是因为事物B提交了Update事物。所以Read UnCommitted会出现不可重复读问题</code></p>
+<font color="red">说明：<br>好多人不能区分幻读和不可重复读。其实区分情况很简单，幻读主要是针对Insert的情况。不可重复读主要是针对Update和Delete情况 </font>
+
+<h3 id="Read-Committed："><a href="#Read-Committed：" class="headerlink" title="Read Committed："></a>Read Committed：</h3><p>设置事务的隔离级别为<code>Read Committed</code><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SET</span> <span class="keyword">session</span> <span class="keyword">transaction</span> <span class="keyword">isolation</span> <span class="keyword">level</span> <span class="keyword">read</span> committed;</div></pre></td></tr></table></figure></p>
+<h4 id="Read-Committed脏读问题"><a href="#Read-Committed脏读问题" class="headerlink" title="Read Committed脏读问题"></a>Read Committed脏读问题</h4><table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>update translation_test set age = -1 where id = 1; <br> select * from translation_test where id =1; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654676644212.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where id =1; <br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654681787849.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td>commit;</td>
+</tr>
+</tbody>
+</table>
+<p><code>这里事物B查询不到事务A未提交的数据。所以Read Committed 不会出现脏读</code></p>
+<h4 id="Read-Committed幻读问题"><a href="#Read-Committed幻读问题" class="headerlink" title="Read Committed幻读问题"></a>Read Committed幻读问题</h4><table>
+<thead>
+<tr>
+<th>事物A</th>
+<th>事物B </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into translation_test(name,age)values(‘gcl’,20);</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果并不一样。这是因为事物B提交了Insert事物。所以Read Committed会出现幻读</code></p>
+<h4 id="Read-Committed不可重复读问题"><a href="#Read-Committed不可重复读问题" class="headerlink" title="Read Committed不可重复读问题"></a>Read Committed不可重复读问题</h4><p>为了更好演示不可重复读的情况。我们将数据修改如下。<br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654784981410.jpg?imageView2/0/format/jpg" alt=""><br>事物A | 事物B<br>—|—<br>begin; | begin;<br>select <em> from translation_test where age =20 ; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654955855189.jpg?imageView2/0/format/jpg" alt="">|<br> | update translation_test set age =21 where id =1;<br> | commit;<br> select </em> from translation_test where age =20 ;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654969574883.jpg?imageView2/0/format/jpg" alt="">|<br> commit;|<br><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果并不一样。这是因为事物B提交了Update事务。所以ReadCommit会出现不可重复读问题。</code></p>
+<h3 id="Repeatable-Read："><a href="#Repeatable-Read：" class="headerlink" title="Repeatable Read："></a>Repeatable Read：</h3><p>设置事物的隔离级别为<code>Repeatable Read</code><br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SET</span> <span class="keyword">session</span> <span class="keyword">transaction</span> <span class="keyword">isolation</span> <span class="keyword">level</span> repeatable <span class="keyword">read</span>;</div></pre></td></tr></table></figure></p>
+<h4 id="Repeatable-Read脏读问题"><a href="#Repeatable-Read脏读问题" class="headerlink" title="Repeatable Read脏读问题"></a>Repeatable Read脏读问题</h4><table>
+<thead>
+<tr>
+<th>事务A</th>
+<th>事务B</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>update translation_test set age = -1 where id = 1; <br> select * from translation_test where id =1; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654676644212.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where id =1; <br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654681787849.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td>commit;</td>
+</tr>
+</tbody>
+</table>
+<p><code>这里事物B查询不到事务A未提交的数据。所以Repeatable Read 不会出现脏读</code></p>
+<h4 id="Repeatable-Read幻读问题"><a href="#Repeatable-Read幻读问题" class="headerlink" title="Repeatable Read幻读问题"></a>Repeatable Read幻读问题</h4><table>
+<thead>
+<tr>
+<th>事物A</th>
+<th>事物B </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>insert into translation_test(name,age)values(‘gcl’,20);</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/2017060414965609691303.jpg?imageView2/0/format/jpg" alt=""></td>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age=20;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149656108365085.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td>commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果并不一样。这是因为事物B提交了Insert事物。所以Repeatable Read会出现幻读</code></p>
+<h4 id="Repeatable-Read不可重复读问题"><a href="#Repeatable-Read不可重复读问题" class="headerlink" title="Repeatable Read不可重复读问题"></a>Repeatable Read不可重复读问题</h4><table>
+<thead>
+<tr>
+<th>事物A</th>
+<th>事物B </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>begin;</td>
+<td>begin;</td>
+</tr>
+<tr>
+<td>select * from translation_test where age =20 ; <br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654955855189.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>update translation_test set age =21 where id =1;</td>
+</tr>
+<tr>
+<td></td>
+<td>commit;</td>
+</tr>
+<tr>
+<td> select * from translation_test where age =20 ;<br> <img src="http://7xutce.com1.z0.glb.clouddn.com/20170604149654969574883.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td> commit;</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><code>可以看到在事物A中两次执行同一个SQL，但是得到的结果是不一样的。所以Repeatable Read 不会出现不可重复读问题（不可重复读就是为了解决这个问题）。</code></p>
+<h3 id="Serializable："><a href="#Serializable：" class="headerlink" title="Serializable："></a>Serializable：</h3><p>Serializable事物隔离级别中。所有的事物都串行执行。这种情况下，不会出现并发事物带来的问题。但是效率也是最低的。</p>
+<h2 id="事物隔离级别问题总结"><a href="#事物隔离级别问题总结" class="headerlink" title="事物隔离级别问题总结"></a>事物隔离级别问题总结</h2><table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>脏读（Dirty Read）</th>
+<th>不可重复读（NonRepeatable Read）</th>
+<th>幻读（Phantom Read）  </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>未提交读（Read uncommitted）</td>
+<td>可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>已提交读（Read committed）</td>
+<td>不可能</td>
+<td>可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>可重复读（Repeatable read）</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>可串行化（Serializable ）</td>
+<td>不可能</td>
+<td>不可能</td>
+<td>不可能</td>
+</tr>
+</tbody>
+</table>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;看了一段时间的MySQL方面的书籍，想把看过的东西总结一下分享出来，一方面是希望可以和大家沟通交流，另一方面对自已也是一个总结升华的过程。
+    
+    </summary>
+    
+      <category term="MySQL" scheme="http://guochenglai.com/categories/MySQL/"/>
+    
+    
+      <category term="MySQL" scheme="http://guochenglai.com/tags/MySQL/"/>
+    
+  </entry>
   
   <entry>
     <title>javafx打包为执行的exe/dmg文件</title>
@@ -753,249 +1155,6 @@ f1g1ns2.dnspod.net
       &lt;p&gt;最近一段时间，做一些分析运营相关的工作，和hive打的交道比较多。每次需要看数据的时候都需要写一个SQL去验证一下，有的时候甚至不知道表结构，但是hive并不像MySQL那样使用方便。目前我司使用hive查询只有两个入口: &lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;通过公司的HUE管理页
-    
-    </summary>
-    
-      <category term="Linux常用技巧" scheme="http://guochenglai.com/categories/Linux%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
-    
-    
-      <category term="Linux常用技巧" scheme="http://guochenglai.com/tags/Linux%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Guava学习教程之2-字符串各种操作详解</title>
-    <link href="http://guochenglai.com/2016/08/30/guava2-strings-joiner-spillter/"/>
-    <id>http://guochenglai.com/2016/08/30/guava2-strings-joiner-spillter/</id>
-    <published>2016-08-30T13:11:01.000Z</published>
-    <updated>2017-05-29T12:58:01.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>在本系列的第一篇文章当中，我们介绍了<a href="http://guochenglai.com/2016/08/30/guava1-map-operation/">如何使用Guava来简化Map类</a>的操作。本文将继续承接上文的内容。来分享Guava为字符串操作带来的便利。 </p>
-<a id="more"></a>
-<h2 id="Joiner-字符串链接工具类"><a href="#Joiner-字符串链接工具类" class="headerlink" title="Joiner:字符串链接工具类"></a>Joiner:字符串链接工具类</h2><h3 id="字符串拼接"><a href="#字符串拼接" class="headerlink" title="字符串拼接"></a>字符串拼接</h3><p>在日常开发过程中会经常遇到这样一个需求：将一个List中的元素按照逗号分隔拆分成一个字符串，如果使用原生的Java来编写，我们可能需要如下的几步：<br>1 循环遍历List。<br>2 判断某一项不为null，就加入String中并添加逗号<br>3 删除拼接的字符串的最后一个逗号<br>具体可用如下的代码来表示：  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">....  </div><div class="line"></div><div class="line">List&lt;String&gt; list = Arrays.asList(<span class="string">"A"</span>,<span class="string">"null"</span>,<span class="string">"B"</span>);  </div><div class="line"></div><div class="line">StringBuilder sb = <span class="keyword">new</span> StringBuilder();  </div><div class="line"></div><div class="line"><span class="keyword">for</span>(String str:list)&#123;  </div><div class="line"></div><div class="line">   <span class="keyword">if</span>(!Strings.isNullOrEmpty)&#123;  </div><div class="line"></div><div class="line">      sb.append(Str).append(,)  </div><div class="line"></div><div class="line">   &#125;  </div><div class="line"></div><div class="line">&#125;  </div><div class="line"></div><div class="line">sb.setLength(stringBuilder.length()-<span class="number">1</span>);  </div><div class="line"></div><div class="line"><span class="keyword">return</span> sb.toString();</div></pre></td></tr></table></figure>
-<p>功能很简单但是很繁琐吧，而且里面还有很多的坑，比如list需要判空，而且在进行截取操作的时候也需要判空，和长度判断。如何改用Guava实现。可以简化为如下的代码，而且不需要进行各种条件判断。  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List&lt;String&gt; list = Arrays.asList(<span class="string">"A"</span>,<span class="string">"null"</span>,<span class="string">"B"</span>);  </div><div class="line"></div><div class="line"><span class="keyword">return</span> Joiner.on(<span class="string">","</span>).skipNulls.join(list);</div></pre></td></tr></table></figure>
-<h3 id="URL拼接"><a href="#URL拼接" class="headerlink" title="URL拼接"></a>URL拼接</h3><p>拼接生成一个如下的URL  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">http:<span class="comment">//guochenglai.com?name=gcl&amp;age=26&amp;address=beijing</span></div></pre></td></tr></table></figure>
-<p>这里就不在说Java怎么写了直接上Guava的写法:  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">String str = <span class="string">"http://guochenglai.com?"</span> +Joiner.on(<span class="string">"&amp;"</span>).withKeyValueSeparator(<span class="string">"="</span>).join(ImmutableMap.of(<span class="string">"name"</span>,<span class="string">"gcl"</span>,<span class="string">"age"</span>,<span class="string">"26"</span>,<span class="string">"address"</span>,<span class="string">"beijing"</span>));</div></pre></td></tr></table></figure>
-<h2 id="Spliter-字符串拆分工具类"><a href="#Spliter-字符串拆分工具类" class="headerlink" title="Spliter:字符串拆分工具类"></a>Spliter:字符串拆分工具类</h2><h3 id="字符串拆分"><a href="#字符串拆分" class="headerlink" title="字符串拆分"></a>字符串拆分</h3><p>1 Spliter类可以方便地根据正则表达式来拆分字符串，可以去电拆分结果中的空串，还可以做trim操作。 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">List&lt;String&gt; splitResults = Splitter.onPattern(<span class="string">","</span>).omitEmptyStrings().trimResults(CharMatcher.NONE).splitToList(<span class="string">"hello,word,,世界,,水平,null"</span>);</div></pre></td></tr></table></figure>
-<p>2 Spliter类还可以做二次拆分，将字符串直接拆分成Map。 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">String str = <span class="string">"id=1;name=gcl,age=26"</span>;  </div><div class="line"></div><div class="line"><span class="comment">//按照正则表达式拆分，拆分结构就一行代码  </span></div><div class="line"></div><div class="line">Map&lt;String, String&gt; map = Splitter.onPattern(<span class="string">"[;,]"</span>).withKeyValueSeparator(<span class="string">"="</span>).split(str);  </div><div class="line"></div><div class="line"><span class="keyword">for</span> (Map.Entry&lt;String, String&gt; entry : map.entrySet()) &#123;  </div><div class="line"></div><div class="line">    System.out.println(entry.getKey()+<span class="string">"----&gt;"</span>+entry.getValue());  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h3 id="URL拆分"><a href="#URL拆分" class="headerlink" title="URL拆分"></a>URL拆分</h3><p>将如下URL的参数拆分到Map中  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">String url = <span class="string">"http://guochenglai.com?name=gcl&amp;age=26&amp;address=beijing"</span>;  </div><div class="line"></div><div class="line"><span class="comment">//拆分代码就如下一行  </span></div><div class="line">Map&lt;String, String&gt; params = Splitter.on(<span class="string">"&amp;"</span>).withKeyValueSeparator(<span class="string">"="</span>).split(url.substring(url.indexOf(<span class="string">"?"</span>)+<span class="number">1</span>));  </div><div class="line"></div><div class="line"><span class="keyword">for</span> (Map.Entry&lt;String, String&gt; entry : params.entrySet()) &#123;  </div><div class="line"></div><div class="line">    System.out.println(entry.getKey()+<span class="string">"----&gt;"</span>+entry.getValue());  </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<h2 id="Strings-字符串操作工具类"><a href="#Strings-字符串操作工具类" class="headerlink" title="Strings:字符串操作工具类"></a>Strings:字符串操作工具类</h2><p>1 判断字符串是否为Null或者Empty  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">boolean</span> isNullOrEmpty = Strings.isNullOrEmpty(input);</div></pre></td></tr></table></figure>
-<p>2 获得两个字符串相同的前缀或者后缀  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">String commonPrefix = Strings.commonPrefix(strA,strB);  </div><div class="line"></div><div class="line">String commonSuffix = Strings.commonSuffix(strA,strB);</div></pre></td></tr></table></figure>
-<p>3 Strings的padStart和padEnd方法来补全字符串 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">String padEndResult = Strings.padEnd(<span class="string">"123"</span>, <span class="number">4</span>, <span class="string">'#'</span>);  </div><div class="line">String padStartResult = Strings.padStart(<span class="string">"123"</span>, <span class="number">4</span>, <span class="string">'#'</span>);</div></pre></td></tr></table></figure>]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在本系列的第一篇文章当中，我们介绍了&lt;a href=&quot;http://guochenglai.com/2016/08/30/guava1-map-operation/&quot;&gt;如何使用Guava来简化Map类&lt;/a&gt;的操作。本文将继续承接上文的内容。来分享Guava为字符串操作带来的便利。 &lt;/p&gt;
-    
-    </summary>
-    
-      <category term="Guava教程" scheme="http://guochenglai.com/categories/Guava%E6%95%99%E7%A8%8B/"/>
-    
-    
-      <category term="Guava教程" scheme="http://guochenglai.com/tags/Guava%E6%95%99%E7%A8%8B/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Guava学习教程之1-Map操作详解</title>
-    <link href="http://guochenglai.com/2016/08/30/guava1-map-operation/"/>
-    <id>http://guochenglai.com/2016/08/30/guava1-map-operation/</id>
-    <published>2016-08-30T12:50:32.000Z</published>
-    <updated>2017-05-18T13:10:08.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>在一开始接触guava的时候我是抵触的。当时这样觉得：相比C++，Java的运行速度有点慢，那么Guava是基于Java封装的运行速度肯定比Java慢，所以不应该使用Java。现在回头来看当时的想法真的有点可笑，真是应了一句话：凡是你排斥的就是你要学习的。下面写几个Guava的优点：<br><a id="more"></a></p>
-<ul>
-<li>优化良好，运行速度快，不要觉得封装的就会速度慢，很多人一看到封装两字就会觉得慢，真是肤浅。guava的封装一条语句完成一系列复杂操作。以这一系列操作来看使用，在最优的实现上来看是一样的。Guava基本上已经优化到了最优，而你自己编写一系列代码，不一定最优，所以guava得速度更快</li>
-<li>提高代码的可读性，代码简介易读。这个在后续的文章之中读者会看到。</li>
-<li>稳定性高，没有bug。</li>
-<li>支持函数式编程，Java在Java8中才有</li>
-</ul>
-<h2 id="MultiMap-在Map的Value中存放多个元素"><a href="#MultiMap-在Map的Value中存放多个元素" class="headerlink" title="MultiMap:在Map的Value中存放多个元素"></a>MultiMap:在Map的Value中存放多个元素</h2><p>MultiMap是一个一个Key对应多个Value的数据结构，他的外部结构类似于java.util.Map，但是实质上他们并没有联系。先看一个例子：  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">    </div><div class="line">Map&lt;String, HashSet&lt;String&gt;&gt; hMap = <span class="keyword">new</span> HashMap&lt;String, HashSet&lt;String&gt;&gt;();</div></pre></td></tr></table></figure>
-<p>从我开始写Java的时候已经不知道遇到这种恶心的结构多少次了。采用Java原生方法的写法如下：  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">如下的代码是将person的list转换成以name为key，person列表为value的Map  </div><div class="line"></div><div class="line">Map&lt;String, HashSet&lt;String&gt;&gt; hMap = <span class="keyword">new</span> HashMap&lt;String, HashSet&lt;String&gt;&gt;();  </div><div class="line"></div><div class="line"><span class="keyword">for</span>(Person p: personList)&#123;   </div><div class="line"></div><div class="line">    HashSet&lt;Person&gt; set = hMap.get(p.getName());   </div><div class="line"></div><div class="line">    <span class="keyword">if</span>(set == <span class="keyword">null</span>)&#123;   </div><div class="line"></div><div class="line">        set = <span class="keyword">new</span> HashSet&lt;Person&gt;();   </div><div class="line"></div><div class="line">        hMap.put(p.getName(), set);   </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">    set.add(p);   </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>相信只要写Java程序的人都会遇到上面的数据结构，每次看到上面这一坨代码，就难受。换成Guava的MultiMap写法如下：  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">   </div><div class="line">Multimap&lt;String, String&gt; map = HashMultimap.create();   </div><div class="line"></div><div class="line"><span class="keyword">for</span>(Person p: personList)&#123;   </div><div class="line"></div><div class="line">   map.put(p.getName(), p);   </div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>简单明了，看起来清爽多了。<br>MultiMap的主要实现类有如下几个，可以对比Map类来理解。 </p>
-<table>
-<thead>
-<tr>
-<th>实现类</th>
-<th>详细解释</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>HashMultimap</td>
-<td>key是HashMap的key,value是一个HashSet的集合 </td>
-</tr>
-<tr>
-<td>ArrayListMultimap</td>
-<td>key是HashMap的key,value是一个ArrayList的集合 </td>
-</tr>
-<tr>
-<td>LinkedHashMultimap</td>
-<td>key是LinkedHashMap的key,value是一个LinkedHashSet的集合 </td>
-</tr>
-<tr>
-<td>TreeMultimap</td>
-<td>key是TreeMap的key,value是一个TreeSet的集合 </td>
-</tr>
-<tr>
-<td>ImmutableMultimap</td>
-<td>不可修改的MultiMap，其他的结构类似HashMultiMap </td>
-</tr>
-</tbody>
-</table>
-<h2 id="BiMap-双向Map"><a href="#BiMap-双向Map" class="headerlink" title="BiMap: 双向Map"></a>BiMap: 双向Map</h2><p>BiMap实现了java.util.Map。它的特点是它的value和key都是不可以重复的，换句话说，它的key和value是等价的，如果你向BiMap中存放了重复的元素，它会抛出IllegalArgumentException。<br>示例：众所周知Map数据结构支持用key来查找value，而且非常方便，但是在很多的应用当中，我们需要根据value来查找key那么使用Map结构就会很麻烦。我们通常会按照如下的代码来操作：  </p>
-  <figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">for</span>(Map.Entry&lt;User,Address&gt; entry:map.entrySet())&#123;  </div><div class="line"></div><div class="line">   <span class="keyword">if</span>(entry.getValue.equals(targetAddress))&#123;  </div><div class="line"></div><div class="line">      <span class="keyword">return</span> entry.getKey();  </div><div class="line"></div><div class="line">   &#125;  </div><div class="line"></div><div class="line">&#125;  </div><div class="line"></div><div class="line"><span class="keyword">return</span> <span class="keyword">null</span>;</div></pre></td></tr></table></figure>
-<p>如果我们将User和Address放在Guava的BiMap数据结构中，查找过程就可以简化为如下的代码：  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">BiMap&lt;User,Address&gt; biMap = <span class="keyword">new</span> HashBiMap&lt;User,Address&gt;();  </div><div class="line"></div><div class="line"><span class="keyword">return</span> biMap.inverse().get(targetAddress);</div></pre></td></tr></table></figure>
-<p>BiMap的常用实现如下： </p>
-<table>
-<thead>
-<tr>
-<th>实现类</th>
-<th>详细解释</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>HashBiMap</td>
-<td>key和value集合都有hashmap的实现 </td>
-</tr>
-<tr>
-<td>EnumBiMap</td>
-<td>key和value都必须是 enum类型 </td>
-</tr>
-<tr>
-<td>ImmutableiMap</td>
-<td>不可修改的BiMap </td>
-</tr>
-</tbody>
-</table>
-<h2 id="MapMaker-ConcurrentMap的构造工具"><a href="#MapMaker-ConcurrentMap的构造工具" class="headerlink" title="MapMaker: ConcurrentMap的构造工具"></a>MapMaker: ConcurrentMap的构造工具</h2><p>MapMaker可以用来构建ConcurrentMap，选项多，操作灵活。<br>例如：<br>1 构造一个有8把锁的ConcurrentMap  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ConcurrentMap&lt;String,Object&gt; map = <span class="keyword">new</span> MapMaker().concurrencyLevel(<span class="number">8</span>).makeMap();</div></pre></td></tr></table></figure>
-<p>2 构造一个自动过期移除的ConcurrentMap  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">ConcurrentMap&lt;String,Object&gt; map = <span class="keyword">new</span> MapMaker().expireAfterWrite(<span class="number">30</span>,TimeUnit.SECONDS).makeMap();</div></pre></td></tr></table></figure>
-<p>3 构造一个有最大数目限制的ConcurrentMap  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">ConcurrentMap&lt;String,Object&gt; map = <span class="keyword">new</span> MapMaker().maximumSize(<span class="number">100</span>).makeMap();</div></pre></td></tr></table></figure>
-<p>4 构造一个上面几个选项联合的map<br>………………. </p>
-<h2 id="MapDifference-Map的交集并集差集操作"><a href="#MapDifference-Map的交集并集差集操作" class="headerlink" title="MapDifference: Map的交集并集差集操作"></a>MapDifference: Map的交集并集差集操作</h2><p>MapDifference主要是用来进行两个Map的比较操作，例如交集，并集，差集……..<br>1 求出两个Map完全相同的entry </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">MapDifference&lt;String,Object&gt; mapDifference = Maps.difference(mapA,mapB);  </div><div class="line">    </div><div class="line">Map&lt;String,Object&gt; commonMap = mapDifference.entriesInCommon();</div></pre></td></tr></table></figure>
-<p>2 求出两个Map中的key相同，但是value不相同的entry<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">  </div><div class="line">MapDifference&lt;String,Object&gt; mapDifference = Maps.difference(mapA,mapB);  </div><div class="line">    </div><div class="line">Map&lt;String,Object&gt; entriesDiffering = mapDifference.entriesDiffering();</div></pre></td></tr></table></figure></p>
-<p>3 求出两个map，左边有，右边没有的entry  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">  </div><div class="line">MapDifference&lt;String,Object&gt; mapDifference = Maps.difference(mapA,mapB);  </div><div class="line">    </div><div class="line">Map&lt;String,Object&gt; entriesOnlyOnLeft = mapDifference.entriesEntriesOnlyOnLeft();</div></pre></td></tr></table></figure>
-<p>4 求出两个Map，右边有，左边没有的entry  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line">MapDifference&lt;String,Object&gt; mapDifference = Maps.difference(mapA,mapB);  </div><div class="line">    </div><div class="line">Map&lt;String,Object&gt; entriesOnlyOnRight = mapDifference.entriesEntriesOnlyOnRight();</div></pre></td></tr></table></figure>
-<h2 id="Maps-map工具类集合"><a href="#Maps-map工具类集合" class="headerlink" title="Maps:map工具类集合"></a>Maps:map工具类集合</h2><p>1 将一个List转换成Map<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List&lt;Person&gt; personList = <span class="keyword">new</span> ArrayList&lt;Person&gt;();  </div><div class="line"></div><div class="line">....  </div><div class="line"></div><div class="line">Map&lt;String,Person&gt; personMaps = Maps.uniqueIndex(personList,<span class="keyword">new</span> Function&lt;Person,String&gt;()&#123;  </div><div class="line"></div><div class="line">   <span class="function"><span class="keyword">public</span> String <span class="title">apply</span><span class="params">(Person person)</span></span>&#123;  </div><div class="line"></div><div class="line">      retuan person.getName();  </div><div class="line"></div><div class="line">   &#125;  </div><div class="line"></div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
-<p>2 将properties转换成Map<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Properties properties = <span class="keyword">new</span> Properties();  </div><div class="line"></div><div class="line">........  </div><div class="line"></div><div class="line">Map&lt;String,String&gt; map = Maps.fromProperties(properties);</div></pre></td></tr></table></figure></p>
-<p>3 对Map按照entry进行过滤，过滤出用户地址为“中关村”的map集合  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">    </div><div class="line">Map&lt;String,Person&gt; map = <span class="keyword">new</span> HashMap&lt;String,Person&gt;();  </div><div class="line">    </div><div class="line">Predicate&lt;Entry&lt;String,Person&gt;&gt; perdicate = <span class="keyword">new</span> Predicate&lt;Map.Entry&lt;String,Person&gt;&gt; ()&#123;  </div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(Entry&lt;String,Person&gt; input)</span></span>&#123;  </div><div class="line">    </div><div class="line">       retuen input.getValue().getAddress().equales(<span class="string">"中关村"</span>);  </div><div class="line">    </div><div class="line">     &#125;  </div><div class="line">    </div><div class="line">&#125;  </div><div class="line">    </div><div class="line">Map&lt;String,Person&gt; resultMap = Maps.filterEntries(map,predicate);</div></pre></td></tr></table></figure>
-<p>4 对Map按照key进行过滤<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">    </div><div class="line">Map&lt;String,Person&gt; map = <span class="keyword">new</span> HashMap&lt;String,Person&gt;();  </div><div class="line"></div><div class="line">Predicate&lt;String&gt; perdicate = <span class="keyword">new</span> Predicate&lt;String&gt; ()&#123;  </div><div class="line">    </div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(String input)</span></span>&#123;  </div><div class="line">    </div><div class="line">            retuen input.contains(<span class="string">"gcl"</span>);  </div><div class="line">    </div><div class="line">        &#125;  </div><div class="line">    </div><div class="line">    &#125;  </div><div class="line">    </div><div class="line">Map&lt;String,Person&gt; resultMap = Maps.filterEntries(map,predicate);</div></pre></td></tr></table></figure></p>
-<p>5 对Map按照value进行过滤<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">    </div><div class="line">Map&lt;String,Person&gt; map = <span class="keyword">new</span> HashMap&lt;String,Person&gt;();  </div><div class="line">    </div><div class="line">Predicate&lt;Person&gt; perdicate = <span class="keyword">new</span> Predicate&lt;Person&gt; ()&#123;  </div><div class="line">    </div><div class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(Person input)</span></span>&#123;  </div><div class="line">    </div><div class="line">            retuen input.getAge()&gt;=<span class="number">22</span>;  </div><div class="line">    </div><div class="line">        &#125;  </div><div class="line">    &#125;  </div><div class="line">    </div><div class="line">Map&lt;String,Person&gt; resultMap = Maps.filterEntries(map,predicate);</div></pre></td></tr></table></figure></p>
-<h2 id="RangeMap：key为一个区间的Map"><a href="#RangeMap：key为一个区间的Map" class="headerlink" title="RangeMap：key为一个区间的Map"></a>RangeMap：key为一个区间的Map</h2><p>例如：成绩 85-100评级为A,成绩70-84评级为，成绩60-69为，成绩0-59为D。 </p>
-<pre><code class="java">
-RaneMap&lt;Integer,String&gt; rangeMap = TreeRangeMap.create();  
-
-rangeMap.put(Range.closed(<span class="number">85</span>,<span class="number">100</span>),<span class="string">"A"</span>);  
-
-rangeMap.put(Range.closed(<span class="number">70</span>,<span class="number">84</span>),<span class="string">"C"</span>);  
-
-rangeMap.put(Range.closed(<span class="number">60</span>,<span class="number">69</span>),<span class="string">"B"</span>);  
-
-rangeMap.put(Range.closed(<span class="number">0</span>,<span class="number">59</span>),<span class="string">"D"</span>);  
-
-String level = rangeMap.get(<span class="number">87</span>);
-</code></pre>
-<p>得到结果为；A  </p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在一开始接触guava的时候我是抵触的。当时这样觉得：相比C++，Java的运行速度有点慢，那么Guava是基于Java封装的运行速度肯定比Java慢，所以不应该使用Java。现在回头来看当时的想法真的有点可笑，真是应了一句话：凡是你排斥的就是你要学习的。下面写几个Guava的优点：&lt;br&gt;
-    
-    </summary>
-    
-      <category term="Guava教程" scheme="http://guochenglai.com/categories/Guava%E6%95%99%E7%A8%8B/"/>
-    
-    
-      <category term="Guava教程" scheme="http://guochenglai.com/tags/Guava%E6%95%99%E7%A8%8B/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>netcat 实现不同服务器机器传输文件详解</title>
-    <link href="http://guochenglai.com/2016/08/23/netcat-file-send/"/>
-    <id>http://guochenglai.com/2016/08/23/netcat-file-send/</id>
-    <published>2016-08-23T12:31:08.000Z</published>
-    <updated>2017-05-18T12:49:33.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>在日常的开发过程中经常会遇到这种需求：将服务器一上的某个文件拷贝到服务器二机器上。因为服务器的机器都只能和堡垒机（跳板机）通信，所以最开始的做法都是通过scp先将服务器一的文件拷贝到跳板机，然后在将跳板机的文件传递到服务器二，这种做法很原始低效。在一次无意中被一位大神看到，给我介绍了<code>NetCat</code>工具。从此便对齐爱不释手。 </p>
-<h2 id="NetCat简介"><a href="#NetCat简介" class="headerlink" title="NetCat简介"></a>NetCat简介</h2><p>NetCat是一个利用TCP或者UDP网络链接来进行信息读写的程序，被誉为网络工具中的瑞士军刀。我们通常可以利用他来完成以下的几个功能： </p>
-<ul>
-<li>实现不同Linux机器之间文件传输</li>
-<li>制作蜜罐收集客户端信息</li>
-<li>端口扫描</li>
-</ul>
-<p><strong>下面是一些网友对NetCat的功能总结：</strong></p>
-<ul>
-<li>支持连出和连入(outbound and inbound connection)，TCP和UDP，任意源和目的端口</li>
-<li>全部DNS正向/反向检查，给出恰当的警告</li>
-<li>使用任何源端口</li>
-<li>使用任何本地设置的网络资源地址</li>
-<li>内建端口扫描功能，带有随机数发生器</li>
-<li>内建loose source-routing功能</li>
-<li>可能标准输入读取命令行参数</li>
-<li>慢发送模式，每N秒发送一行</li>
-<li>以16进制显示传送或接收的数据</li>
-<li>允许其它程序服务建立连接，可选</li>
-<li>对Telnet应答，可选</li>
-</ul>
-<h2 id="NetCat的安装"><a href="#NetCat的安装" class="headerlink" title="NetCat的安装"></a>NetCat的安装</h2><p>如果机器上面没有netcat可以手动安装<br>centos类系统的安装命令：  </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">   </div><div class="line">sudo yum install nc</div></pre></td></tr></table></figure>
-<p>deban类系统的安装命令： </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">   </div><div class="line">sudo apt-get install nc</div></pre></td></tr></table></figure>
-<h2 id="NetCat参数说明"><a href="#NetCat参数说明" class="headerlink" title="NetCat参数说明"></a>NetCat参数说明</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">-g&lt;网关&gt; 设置路由器跃程通信网关，最丢哦可设置<span class="number">8</span>个。  </div><div class="line">    </div><div class="line">-G&lt;指向器数目&gt; 设置来源路由指向器，其数值为<span class="number">4</span>的倍数。  </div><div class="line">    </div><div class="line">-h 在线帮助。  </div><div class="line">    </div><div class="line">-i&lt;延迟秒数&gt; 设置时间间隔，以便传送信息及扫描通信端口。  </div><div class="line">    </div><div class="line">-l 使用监听模式，管控传入的资料。  </div><div class="line">    </div><div class="line">-n 直接使用IP地址，而不通过域名服务器。  </div><div class="line">    </div><div class="line">-o&lt;输出文件&gt; 指定文件名称，把往来传输的数据以<span class="number">16</span>进制字码倾倒成该文件保存。  </div><div class="line">    </div><div class="line">-p&lt;通信端口&gt; 设置本地主机使用的通信端口。  </div><div class="line">    </div><div class="line">-r 乱数指定本地与远端主机的通信端口。  </div><div class="line">    </div><div class="line">-s&lt;来源位址&gt; 设置本地主机送出数据包的IP地址。  </div><div class="line">    </div><div class="line">-u 使用UDP传输协议。  </div><div class="line">    </div><div class="line">-v 显示指令执行过程。  </div><div class="line">    </div><div class="line">-w&lt;超时秒数&gt; 设置等待连线的时间。  </div><div class="line">    </div><div class="line">-z 使用<span class="number">0</span>输入/输出模式，只在扫描通信端口时使用  </div><div class="line">    </div><div class="line">-k 此参数用在服务器端 用来保证服务器的</div></pre></td></tr></table></figure>
-<h2 id="NetCat实现服务器机器通信"><a href="#NetCat实现服务器机器通信" class="headerlink" title="NetCat实现服务器机器通信"></a>NetCat实现服务器机器通信</h2><p>假设我们需要将服务器一（机器名称 : l-foo.google.com）的文件传送到服务器二（机器名称：l-bar.google.com）上面 </p>
-<h3 id="传递压缩文件夹"><a href="#传递压缩文件夹" class="headerlink" title="传递压缩文件夹"></a>传递压缩文件夹</h3><p>一:服务器一（机器名称 : l-foo.google.com）上面执行：  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">tar -zcf - test.google.com/ | nc -l <span class="number">5678</span></div></pre></td></tr></table></figure>
-<p>二: 在服务器二（机器名称：l-bar.google.com）上面执行：  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">nc l-foo.google.com <span class="number">5678</span> | sudo tar -xzf -</div></pre></td></tr></table></figure>
-<p>分别在两个机器上执行这两条命令可以发现，在bar机器上已经有了foo机器上的<code>test.qunar.com</code>文件夹 </p>
-<h3 id="传递非压缩文件"><a href="#传递非压缩文件" class="headerlink" title="传递非压缩文件"></a>传递非压缩文件</h3><p>一:服务器一（机器名称 : l-foo.google.com）上面执行： </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"> </div><div class="line">sudo nc -l <span class="number">2222</span> &lt;a.txt</div></pre></td></tr></table></figure>
-<p>二: 在服务器二（机器名称：l-bar.google.com）上面执行： </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">sudo nc l-foo.google.com <span class="number">2222</span> &gt; a.txt</div></pre></td></tr></table></figure>
-<p>执行上面两条命令可以发现在服务器bar机器上已经有了foo机器上的<code>a.txt</code>文件 </p>
-<h2 id="NetCat制作蜜罐收集客户端信息"><a href="#NetCat制作蜜罐收集客户端信息" class="headerlink" title="NetCat制作蜜罐收集客户端信息"></a>NetCat制作蜜罐收集客户端信息</h2><p>蜜罐简介：蜜罐形象地描述就是将蜜蜂引入到罐子中，主要用于收集黑客信息。就是我制作一个假的服务器让黑客攻击，然后收集他的信息，用作证据。 </p>
-<p>在foo机器启动一个蜜罐 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">sudo nc -l <span class="number">80</span></div></pre></td></tr></table></figure>
-<p>当黑客攻击如下URL时： </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">http:<span class="comment">//l-foo.google.com/</span></div></pre></td></tr></table></figure>
-<p>foo机器就会得到如下的信息，然后保存起来。 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">    GET / HTTP/<span class="number">1.1</span>  </div><div class="line">    </div><div class="line">    Host: l-foo.google.com  </div><div class="line">    </div><div class="line">    Connection: keep-alive  </div><div class="line">    </div><div class="line">    Cache-Control: max-age=<span class="number">0</span>  </div><div class="line">    </div><div class="line">    Accept: text/html,application/xhtml+xml,application/xml;q=<span class="number">0.9</span>,image/webp,*<span class="comment">/*;q=0.8  </span></div><div class="line">    </div><div class="line">    Upgrade-Insecure-Requests: 1  </div><div class="line">    </div><div class="line">    User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.86 Safari/537.36  </div><div class="line">    </div><div class="line">    Accept-Encoding: gzip, deflate, sdch  </div><div class="line">    </div><div class="line">    Accept-Language: zh-CN,zh;q=0.8,en;q=0.6  </div><div class="line">    </div><div class="line">    Cookie: XXX=XXXX;   </div><div class="line">XXXGlobal=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</div></pre></td></tr></table></figure>
-<p>这样你就得到了攻击者的详细信息 </p>
-<h2 id="NetCat进行TCP端口扫描"><a href="#NetCat进行TCP端口扫描" class="headerlink" title="NetCat进行TCP端口扫描"></a>NetCat进行TCP端口扫描</h2><p>扫描foo机器 1到10000端口是否有TCP链接  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">nc -z -w1 -v l-foo.google.com <span class="number">1</span>-<span class="number">10000</span> | grep <span class="string">'succeed'</span> | awk <span class="string">'&#123;print "host:"$3,$4" port has a tcp connect"&#125;'</span></div></pre></td></tr></table></figure>
-<p>得到如下信息：  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">host:l-foo.google.com <span class="number">22</span> port has a tcp connect  </div><div class="line">host:l-foo.google.com <span class="number">53</span> port has a tcp connect  </div><div class="line">host:l-foo.google.com <span class="number">3306</span> port has a tcp connect  </div><div class="line">host:l-foo.google.com <span class="number">5666</span> port has a tcp connect  </div><div class="line">host:l-foo.google.com <span class="number">8668</span> port has a tcp connect</div></pre></td></tr></table></figure>
-<p>表明： 22，53，3306 … 机器上面有TCP链接。 </p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在日常的开发过程中经常会遇到这种需求：将服务器一上的某个文件拷贝到服务器二机器上。因为服务器的机器都只能和堡垒机（跳板机）通信，所以最开始的做法都是通过scp先将服务器一的文件拷贝到跳板机，然后在将跳板机的文件传递到服务器二，这种做法很原始低效。在一次无意中被一位大神看到，
     
     </summary>
     
