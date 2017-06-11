@@ -5,8 +5,9 @@
     <entry>
       <title><![CDATA[MySQL之4--Innodb锁分析]]></title>
       <url>/2017/05/28/mysql4-innode-lock/</url>
-      <content type="html"><![CDATA[<p>InnoD</p>
-]]></content>
+      <content type="html"><![CDATA[<p>现在MySQL的默认存储引擎是InnoDB，其提供了一个很强大的功能就是行级锁。可以通过<code>show status like &#39;innodb_row_lock%&#39;;</code>来查看当前系统的行锁争用情况。如果<code>Innodb_row_lock_waits</code>和<code>Innodb_row_lock_time_avg</code>两个值比较高，则说明锁争用比较严重。<a id="more"></a></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>InnoDB</p>
+<h2 id="加锁分析"><a href="#加锁分析" class="headerlink" title="加锁分析"></a>加锁分析</h2>]]></content>
       
         <categories>
             
