@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://guochenglai.com/"/>
-  <updated>2017-06-04T10:25:14.000Z</updated>
+  <updated>2017-06-11T13:32:39.000Z</updated>
   <id>http://guochenglai.com/</id>
   
   <author>
@@ -14,6 +14,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MySQL之4--Innodb锁分析</title>
+    <link href="http://guochenglai.com/2017/05/28/mysql4-innode-lock/"/>
+    <id>http://guochenglai.com/2017/05/28/mysql4-innode-lock/</id>
+    <published>2017-05-28T04:40:41.000Z</published>
+    <updated>2017-06-11T13:32:39.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>InnoD</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;InnoD&lt;/p&gt;
+
+    
+    </summary>
+    
+      <category term="MySQL" scheme="http://guochenglai.com/categories/MySQL/"/>
+    
+    
+      <category term="MySQL" scheme="http://guochenglai.com/tags/MySQL/"/>
+    
+  </entry>
   
   <entry>
     <title>MySQL之3--MySQL索引优化、SQL优化、慢查询分析</title>
@@ -1207,43 +1231,6 @@ f1g1ns2.dnspod.net
     
     
       <category term="Guava教程" scheme="http://guochenglai.com/tags/Guava%E6%95%99%E7%A8%8B/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Python连接Hive详细教程</title>
-    <link href="http://guochenglai.com/2016/09/04/python-connect-hive/"/>
-    <id>http://guochenglai.com/2016/09/04/python-connect-hive/</id>
-    <published>2016-09-04T13:20:39.000Z</published>
-    <updated>2017-05-18T13:26:40.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>最近一段时间，做一些分析运营相关的工作，和hive打的交道比较多。每次需要看数据的时候都需要写一个SQL去验证一下，有的时候甚至不知道表结构，但是hive并不像MySQL那样使用方便。目前我司使用hive查询只有两个入口: </p>
-<ul>
-<li>通过公司的HUE管理页面，这个是推荐的方法，但是有一个问题，每一张表都需要申请。很麻烦，而且我们部门审批hive表的那个XXX太XXX了，申请比较困难。</li>
-<li>使用JDBC进行连接。这个是可以，但是Java使用起来还是不方便。</li>
-</ul>
-<p>所以我就想写一个Python脚本来执行SQL。本来觉得很容易，但是发现这里面的坑太多了。主要问题是Python的库都太弱并且好多库都没人维护了。折腾了一天终于找到了一个比较好的库，下面就是具体的过程： </p>
-<h2 id="安装Python依赖库"><a href="#安装Python依赖库" class="headerlink" title="安装Python依赖库"></a>安装Python依赖库</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">pip install impyla</div></pre></td></tr></table></figure>
-<h2 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">__author__ = <span class="string">'guochenglai'</span>   </div><div class="line">from impala.dbapi <span class="keyword">import</span> connect  </div><div class="line">hive_config = &#123;&#125;  </div><div class="line">hive_config[<span class="string">'online'</span>] = &#123;  </div><div class="line">    <span class="string">'host'</span>: <span class="string">'l-xxx.com'</span>,  </div><div class="line">    <span class="string">'db'</span>: <span class="string">'xxx'</span>,  </div><div class="line">    <span class="string">'port'</span>: <span class="number">12001</span> </div><div class="line">&#125;  </div><div class="line"></div><div class="line"><span class="function">def <span class="title">get_hive_cursor</span><span class="params">(conf)</span>:  </span></div><div class="line">    conn = connect(host=conf[<span class="string">'host'</span>], port=conf[<span class="string">'port'</span>], database=conf[<span class="string">'db'</span>], auth_mechanism=<span class="string">'PLAIN'</span>)  </div><div class="line">    <span class="keyword">return</span> conn.cursor()  </div><div class="line"></div><div class="line"><span class="function">def <span class="title">execute_sql</span><span class="params">(cursor,sql)</span>:     </span></div><div class="line">    cursor.<span class="title">execute</span><span class="params">(sql)</span>  </div><div class="line">    return cursor.<span class="title">fetchall</span><span class="params">()</span>  </div><div class="line"></div><div class="line">def <span class="title">assemble_sql</span><span class="params">()</span>:  </div><div class="line">    sql=<span class="string">''</span><span class="string">'SHOW Tables'</span><span class="string">''</span>  </div><div class="line">    <span class="keyword">return</span> sql  </div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:  </div><div class="line">    hive = hive_config[<span class="string">'online'</span>]  </div><div class="line">    cursor = get_hive_cursor(hive)  </div><div class="line">    sql = assemble_sql()  </div><div class="line">    <span class="function">print <span class="title">execute_sql</span><span class="params">(cursor,sql)</span></span></div></pre></td></tr></table></figure>
-<p>如果是学习的小伙伴上面两部链接hive应该的已经成功了。下面是我尝试其他方法遇到的问题。与教程无关，如果是小白用户就不用看了。 </p>
-<h2 id="其他链接方法中遇到的坑"><a href="#其他链接方法中遇到的坑" class="headerlink" title="其他链接方法中遇到的坑"></a>其他链接方法中遇到的坑</h2><p>在前期尝试了很多其他的方法遇到了很多坑，至今没有解决。如果有人遇到以下的问题，并且已经解决。烦请多交流。<br>遇到的第一个问题程序报错如下： </p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">  File "build/bdist.macosx-10.11-intel/egg/pyhs2/__init__.py", line 7, in connect  </div><div class="line">    # Copyright (c) 1999 by Secret Labs AB.  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/pyhs2/connections.py", line 47, in __init__  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/pyhs2/TCLIService/TCLIService.py", line 154, in OpenSession  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/pyhs2/TCLIService/TCLIService.py", line 165, in recv_OpenSession  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/thrift/protocol/TBinaryProtocol.py", line 140, in readMessageBegin  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/thrift/transport/TTransport.py", line 58, in readAll  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/thrift/transport/TTransport.py", line 159, in read  </div><div class="line">  File "build/bdist.macosx-10.11-intel/egg/thrift/transport/TSocket.py", line 120, in read  </div><div class="line">thrift.transport.TTransport.TTransportException: TSocket read 0 bytes</div></pre></td></tr></table></figure>
-<p>遇到问题二程序报错如下： </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">/usr/local/lib/python2.7/site-packages/setuptools-<span class="number">12.3</span>-py2.7.egg/pkg_resources/init.py:<span class="number">1224</span>: UserWarning: /home/tap/.python-eggs is writable by group/others and vulnerable to attack when used with get_resource_filename. <span class="function">Consider a more secure <span class="title">location</span> <span class="params">(set with .set_extraction_path or the PYTHON_EGG_CACHE environment variable)</span>.  </span></div><div class="line"><span class="title">Traceback</span> <span class="params">(most recent call last)</span>:  </div><div class="line">File "testPktFlow2.py", line 7, in   </div><div class="line">database=<span class="string">'default'</span>) as conn:  </div><div class="line">File <span class="string">"build/bdist.linux-x86_64/egg/pyhs2/init.py"</span>, line <span class="number">7</span>, in connect  </div><div class="line">File <span class="string">"build/bdist.linux-x86_64/egg/pyhs2/connections.py"</span>, line <span class="number">45</span>, in init  </div><div class="line">File <span class="string">"build/bdist.linux-x86_64/egg/pyhs2/cloudera/thrift_sasl.py"</span>, line <span class="number">66</span>, in open  </div><div class="line">thrift.transport.TTransport.TTransportException: Could not start SASL: <span class="function">Error in <span class="title">sasl_client_start</span> <span class="params">(<span class="number">-4</span>)</span> <span class="title">SASL</span><span class="params">(<span class="number">-4</span>)</span>: no mechanism available: No worthy mechs found</span></div></pre></td></tr></table></figure>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;最近一段时间，做一些分析运营相关的工作，和hive打的交道比较多。每次需要看数据的时候都需要写一个SQL去验证一下，有的时候甚至不知道表结构，但是hive并不像MySQL那样使用方便。目前我司使用hive查询只有两个入口: &lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;通过公司的HUE管理页
-    
-    </summary>
-    
-      <category term="Linux常用技巧" scheme="http://guochenglai.com/categories/Linux%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
-    
-    
-      <category term="Linux常用技巧" scheme="http://guochenglai.com/tags/Linux%E5%B8%B8%E7%94%A8%E6%8A%80%E5%B7%A7/"/>
     
   </entry>
   
