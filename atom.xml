@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://guochenglai.com/"/>
-  <updated>2017-06-11T14:00:58.000Z</updated>
+  <updated>2017-06-11T15:19:37.000Z</updated>
   <id>http://guochenglai.com/</id>
   
   <author>
@@ -20,11 +20,59 @@
     <link href="http://guochenglai.com/2017/05/28/mysql4-innode-lock/"/>
     <id>http://guochenglai.com/2017/05/28/mysql4-innode-lock/</id>
     <published>2017-05-28T04:40:41.000Z</published>
-    <updated>2017-06-11T14:00:58.000Z</updated>
+    <updated>2017-06-11T15:19:37.000Z</updated>
     
     <content type="html"><![CDATA[<p>现在MySQL的默认存储引擎是InnoDB，其提供了一个很强大的功能就是行级锁。可以通过<code>show status like &#39;innodb_row_lock%&#39;;</code>来查看当前系统的行锁争用情况。如果<code>Innodb_row_lock_waits</code>和<code>Innodb_row_lock_time_avg</code>两个值比较高，则说明锁争用比较严重。<a id="more"></a></p>
-<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>InnoDB</p>
-<h2 id="加锁分析"><a href="#加锁分析" class="headerlink" title="加锁分析"></a>加锁分析</h2>]]></content>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>InnoDB提供了两种类型的行锁：</p>
+<ul>
+<li>共享锁：对于一行已经加了共享锁的记录，可以允许其他共享锁的存在，却不允许其他排他锁的存在。这个可以对比读锁来理解。<code>SELECT * FROM table WHERE id=1 LOCK IN SHARE MODE</code>。</li>
+<li>排他锁：对于一行已经加了排他锁的记录。既不允许其他的共享锁存在，也不允许其他排他锁的存在。这个可以对比写锁来理解。<code>SELECT * FROM table WHERE id=1 FOR UPDATE</code>。<br>InnoDB行锁是通过对索引进行加锁来执行的，如果没有索引，InnoDB将通过隐藏的聚族索引来对记录进行加锁。InnoDB的行锁分为三种情况：</li>
+<li>Record Lock ： 对唯一索引进行加锁。</li>
+<li>Gap Lock ：</li>
+<li>Next Key Lock ：是<code>Record Lock</code>和<code>Gap Lock</code>的合集。  <blockquote>
+<font color="red">注意：如果对表的某一行没有任务索引的列进行加锁，那么并不会只对这一行加锁。而是对全表加锁</font>
+
+</blockquote>
+</li>
+</ul>
+<h2 id="加锁分析"><a href="#加锁分析" class="headerlink" title="加锁分析"></a>加锁分析</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">create</span> <span class="keyword">table</span> lock_test(</div><div class="line">   <span class="keyword">id</span> <span class="built_in">int</span> primary <span class="keyword">key</span> <span class="keyword">not</span> <span class="literal">null</span> auto_increment ,</div><div class="line">   <span class="keyword">name</span> <span class="built_in">varchar</span>(<span class="number">32</span>) <span class="keyword">not</span> <span class="literal">null</span> ,</div><div class="line">   age <span class="built_in">int</span> <span class="keyword">not</span> <span class="literal">null</span> <span class="keyword">default</span> <span class="number">0</span> ,</div><div class="line">   <span class="keyword">key</span>  <span class="string">`idx_name`</span>(<span class="string">`name`</span>)</div><div class="line">);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> lock_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'gcl'</span>,<span class="number">26</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> lock_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'lisi'</span>,<span class="number">54</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> lock_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'ww'</span>,<span class="number">12</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> lock_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'zl'</span>,<span class="number">9</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> lock_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'sq'</span>,<span class="number">20</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> lock_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'hh'</span>,<span class="number">18</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> lock_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'zh'</span>,<span class="number">15</span>);</div><div class="line"><span class="keyword">insert</span> <span class="keyword">into</span> lock_test(<span class="keyword">name</span>,age)<span class="keyword">values</span>(<span class="string">'mm'</span>,<span class="number">23</span>);</div></pre></td></tr></table></figure>
+<p>其中<code>id</code>字段加唯一索引。<code>name</code>字段加非唯一索引。age字段无索引。<img src="http://7xutce.com1.z0.glb.clouddn.com/20170611149719348577218.jpg?imageView2/0/format/jpg" alt=""></p>
+<h3 id="共享锁与排它锁"><a href="#共享锁与排它锁" class="headerlink" title="共享锁与排它锁"></a>共享锁与排它锁</h3><p>建表语句如下：</p>
+<table>
+<thead>
+<tr>
+<th>session1</th>
+<th>session2</th>
+<th>session3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>set autocommit=0;</td>
+<td>set autocommit=0;</td>
+</tr>
+<tr>
+<td>对id=1的事物加共享锁<br>select * from lock_test where id = 1 lock in share mode;<br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170611149719381531532.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>其他事物仍然可以对id=1的记录加共享锁<br>select * from lock_test where id = 1 lock in share mode;<br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170611149719381531532.jpg?imageView2/0/format/jpg" alt=""></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>其他事物对id=1的记录加排它锁，则报错 <br> select * from lock_test where id = 1 for update; <br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170611149719420864268.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+</tbody>
+</table>
+<h3 id="行锁"><a href="#行锁" class="headerlink" title="行锁"></a>行锁</h3><h3 id="间隙锁"><a href="#间隙锁" class="headerlink" title="间隙锁"></a>间隙锁</h3><h3 id="Next-Key锁"><a href="#Next-Key锁" class="headerlink" title="Next Key锁"></a>Next Key锁</h3>]]></content>
     
     <summary type="html">
     
