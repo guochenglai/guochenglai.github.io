@@ -3,6 +3,116 @@
   
     
     <entry>
+      <title><![CDATA[MySQL之5--SQL执行过程详解]]></title>
+      <url>/2017/06/23/mysql5-sql-process-detail/</url>
+      <content type="html"><![CDATA[<p>从用户通过程序或者客户端向MySQL服务器发送一条SQL语句到用户接到这条SQL语句的执行结果，这中间MySQL数据库是怎样处理的呢？本文将揭开这个面纱。<a id="more"></a></p>
+<h2 id="SQL处理流程"><a href="#SQL处理流程" class="headerlink" title="SQL处理流程"></a>SQL处理流程</h2><p>如下图是我画的一个MySQL数据处理流程的简易图。<br>(<a href="http://7xutce.com1.z0.glb.clouddn.com/20170702149900287638350.jpg?imageView2/0/format/jpg" target="_blank" rel="external">http://7xutce.com1.z0.glb.clouddn.com/20170702149900287638350.jpg?imageView2/0/format/jpg</a>)</p>
+]]></content>
+      
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[vim技巧以及常用快捷键]]></title>
+      <url>/2017/06/15/vim-guide/</url>
+      <content type="html"><![CDATA[<p>vim其实就是对vi的扩展。如果用户使用MAC或者Linux系统。那么掌握一些VIM的常用技巧是比不可少的。<a id="more"></a></p>
+<h2 id="VIM的三种模式"><a href="#VIM的三种模式" class="headerlink" title="VIM的三种模式"></a>VIM的三种模式</h2><p>VIM有三种模式：<code>一般模式</code>、<code>编辑模式</code>、<code>指令模式</code></p>
+<ul>
+<li>一般模式 ： VIM的默认模式，打开VIM首先进入的一般模式，在这个模式下，是不行执行任何操作的。他是编辑模式和指令模式的桥梁。一般模式进入编辑模式有以下几种方法：<br> 1 按键<code>i</code>:在光标当前行进入编辑模式<br> 2 按键<code>o</code>:在光标下一行进入编辑模式</li>
+<li>编辑模式 ： 在编辑模式下可以对文本内容进行编辑</li>
+<li>指令模式 ：指令模式可以执行相应的命令操作文本，也可以执行shell命令。</li>
+</ul>
+<h2 id="VIM的常用快捷键"><a href="#VIM的常用快捷键" class="headerlink" title="VIM的常用快捷键"></a>VIM的常用快捷键</h2><h3 id="一般模式下的常用快捷键"><a href="#一般模式下的常用快捷键" class="headerlink" title="一般模式下的常用快捷键"></a>一般模式下的常用快捷键</h3><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明以及快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>移到行首</td>
+<td>按键<code>0</code>或者<code>^</code></td>
+</tr>
+<tr>
+<td>移到行尾</td>
+<td>按键<code>$</code></td>
+</tr>
+<tr>
+<td>回退</td>
+<td>按键<code>u</code></td>
+</tr>
+<tr>
+<td>复制</td>
+<td>按键<code>yy</code></td>
+</tr>
+<tr>
+<td>粘贴</td>
+<td>按键<code>p</code></td>
+</tr>
+<tr>
+<td>移动到文档最后一行</td>
+<td>按键<code>G</code></td>
+</tr>
+<tr>
+<td>移到到文档第一行</td>
+<td>按键<code>gg</code></td>
+</tr>
+<tr>
+<td>删除光标当前行</td>
+<td>按键<code>dd</code></td>
+</tr>
+<tr>
+<td>当前行和下一行互换</td>
+<td>按键<code>ddp</code></td>
+</tr>
+<tr>
+<td>光标下移n行</td>
+<td>按键<code>n+</code>例如<code>8+</code>就是光标下移8行</td>
+</tr>
+<tr>
+<td>光标上移n行</td>
+<td>按键<code>n-</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="命令模式常用快捷键"><a href="#命令模式常用快捷键" class="headerlink" title="命令模式常用快捷键"></a>命令模式常用快捷键</h3><p>在一般模式下，按键<code>:</code>进入命令模式</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明以及快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>显示行号</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;按键 <code>set num</code> <br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170702149900167486191.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td>取消显示行号</td>
+<td>按键 <code>set nonu</code></td>
+</tr>
+<tr>
+<td>退出不保存</td>
+<td>按键<code>q!</code></td>
+</tr>
+<tr>
+<td>退出保存</td>
+<td>按键<code>wq</code></td>
+</tr>
+<tr>
+<td>执行shell命令</td>
+<td>按键<code>shell</code></td>
+</tr>
+</tbody>
+</table>
+]]></content>
+      
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[MySQL之4--Innodb锁分析]]></title>
       <url>/2017/05/28/mysql4-innode-lock/</url>
       <content type="html"><![CDATA[<p>现在MySQL的默认存储引擎是InnoDB，其提供了一个很强大的功能就是行级锁。可以通过<code>show status like &#39;innodb_row_lock%&#39;;</code>来查看当前系统的行锁争用情况。如果<code>Innodb_row_lock_waits</code>和<code>Innodb_row_lock_time_avg</code>两个值比较高，则说明锁争用比较严重。<a id="more"></a></p>

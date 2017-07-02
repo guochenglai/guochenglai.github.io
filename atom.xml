@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://guochenglai.com/"/>
-  <updated>2017-07-02T12:14:58.000Z</updated>
+  <updated>2017-07-02T13:48:11.000Z</updated>
   <id>http://guochenglai.com/</id>
   
   <author>
@@ -14,6 +14,136 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>MySQL之5--SQL执行过程详解</title>
+    <link href="http://guochenglai.com/2017/06/23/mysql5-sql-process-detail/"/>
+    <id>http://guochenglai.com/2017/06/23/mysql5-sql-process-detail/</id>
+    <published>2017-06-23T12:47:28.000Z</published>
+    <updated>2017-07-02T13:48:11.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>从用户通过程序或者客户端向MySQL服务器发送一条SQL语句到用户接到这条SQL语句的执行结果，这中间MySQL数据库是怎样处理的呢？本文将揭开这个面纱。<a id="more"></a></p>
+<h2 id="SQL处理流程"><a href="#SQL处理流程" class="headerlink" title="SQL处理流程"></a>SQL处理流程</h2><p>如下图是我画的一个MySQL数据处理流程的简易图。<br>(<a href="http://7xutce.com1.z0.glb.clouddn.com/20170702149900287638350.jpg?imageView2/0/format/jpg" target="_blank" rel="external">http://7xutce.com1.z0.glb.clouddn.com/20170702149900287638350.jpg?imageView2/0/format/jpg</a>)</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;从用户通过程序或者客户端向MySQL服务器发送一条SQL语句到用户接到这条SQL语句的执行结果，这中间MySQL数据库是怎样处理的呢？本文将揭开这个面纱。
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>vim技巧以及常用快捷键</title>
+    <link href="http://guochenglai.com/2017/06/15/vim-guide/"/>
+    <id>http://guochenglai.com/2017/06/15/vim-guide/</id>
+    <published>2017-06-15T12:42:43.000Z</published>
+    <updated>2017-07-02T13:38:54.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>vim其实就是对vi的扩展。如果用户使用MAC或者Linux系统。那么掌握一些VIM的常用技巧是比不可少的。<a id="more"></a></p>
+<h2 id="VIM的三种模式"><a href="#VIM的三种模式" class="headerlink" title="VIM的三种模式"></a>VIM的三种模式</h2><p>VIM有三种模式：<code>一般模式</code>、<code>编辑模式</code>、<code>指令模式</code></p>
+<ul>
+<li>一般模式 ： VIM的默认模式，打开VIM首先进入的一般模式，在这个模式下，是不行执行任何操作的。他是编辑模式和指令模式的桥梁。一般模式进入编辑模式有以下几种方法：<br> 1 按键<code>i</code>:在光标当前行进入编辑模式<br> 2 按键<code>o</code>:在光标下一行进入编辑模式</li>
+<li>编辑模式 ： 在编辑模式下可以对文本内容进行编辑</li>
+<li>指令模式 ：指令模式可以执行相应的命令操作文本，也可以执行shell命令。</li>
+</ul>
+<h2 id="VIM的常用快捷键"><a href="#VIM的常用快捷键" class="headerlink" title="VIM的常用快捷键"></a>VIM的常用快捷键</h2><h3 id="一般模式下的常用快捷键"><a href="#一般模式下的常用快捷键" class="headerlink" title="一般模式下的常用快捷键"></a>一般模式下的常用快捷键</h3><table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明以及快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>移到行首</td>
+<td>按键<code>0</code>或者<code>^</code></td>
+</tr>
+<tr>
+<td>移到行尾</td>
+<td>按键<code>$</code></td>
+</tr>
+<tr>
+<td>回退</td>
+<td>按键<code>u</code></td>
+</tr>
+<tr>
+<td>复制</td>
+<td>按键<code>yy</code></td>
+</tr>
+<tr>
+<td>粘贴</td>
+<td>按键<code>p</code></td>
+</tr>
+<tr>
+<td>移动到文档最后一行</td>
+<td>按键<code>G</code></td>
+</tr>
+<tr>
+<td>移到到文档第一行</td>
+<td>按键<code>gg</code></td>
+</tr>
+<tr>
+<td>删除光标当前行</td>
+<td>按键<code>dd</code></td>
+</tr>
+<tr>
+<td>当前行和下一行互换</td>
+<td>按键<code>ddp</code></td>
+</tr>
+<tr>
+<td>光标下移n行</td>
+<td>按键<code>n+</code>例如<code>8+</code>就是光标下移8行</td>
+</tr>
+<tr>
+<td>光标上移n行</td>
+<td>按键<code>n-</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="命令模式常用快捷键"><a href="#命令模式常用快捷键" class="headerlink" title="命令模式常用快捷键"></a>命令模式常用快捷键</h3><p>在一般模式下，按键<code>:</code>进入命令模式</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明以及快捷键</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>显示行号</td>
+<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;按键 <code>set num</code> <br><img src="http://7xutce.com1.z0.glb.clouddn.com/20170702149900167486191.jpg?imageView2/0/format/jpg" alt=""></td>
+</tr>
+<tr>
+<td>取消显示行号</td>
+<td>按键 <code>set nonu</code></td>
+</tr>
+<tr>
+<td>退出不保存</td>
+<td>按键<code>q!</code></td>
+</tr>
+<tr>
+<td>退出保存</td>
+<td>按键<code>wq</code></td>
+</tr>
+<tr>
+<td>执行shell命令</td>
+<td>按键<code>shell</code></td>
+</tr>
+</tbody>
+</table>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;vim其实就是对vi的扩展。如果用户使用MAC或者Linux系统。那么掌握一些VIM的常用技巧是比不可少的。
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>MySQL之4--Innodb锁分析</title>
@@ -1230,162 +1360,6 @@ f1g1ns2.dnspod.net
     <summary type="html">
     
       &lt;p&gt;我们常常会遇到集合之间的转换，例如：List集合转换成Map的集合，Map的集合转换为List的集合。通常情况下我们都需要进行集合的遍历，然后进行转换，这个实现略low，包括甲骨文公司自己也认识到了这个问题，所以在Java8中引入了流机制来实现非遍历的转换。Java8一下版本的JDK我们可以使用Guava来实现非遍历的集合转换。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="Guava教程" scheme="http://guochenglai.com/categories/Guava%E6%95%99%E7%A8%8B/"/>
-    
-    
-      <category term="Guava教程" scheme="http://guochenglai.com/tags/Guava%E6%95%99%E7%A8%8B/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Java日志框架之Logback详解</title>
-    <link href="http://guochenglai.com/2016/09/14/java-logback-analysis/"/>
-    <id>http://guochenglai.com/2016/09/14/java-logback-analysis/</id>
-    <published>2016-09-14T09:12:34.000Z</published>
-    <updated>2017-05-21T11:27:23.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>Java的日志系统经过了漫长的发展，最后确认为slf4j加logback的结构。充分证明了logback的生命力。<br><a id="more"></a></p>
-<h2 id="java日志的发展"><a href="#java日志的发展" class="headerlink" title="java日志的发展"></a>java日志的发展</h2><p><strong>1 起步阶段</strong><br>在Java发展的初期是没有真正的日志框架的，当时为了排查问题都是使用<code>System.out</code>或者<code>System.err</code>来进行关键信息的记录。然后利用系统的重定向功能将这些关键信息，记录到特定的文件之中。起到记录日志排查问题的作用。这样做有一个很大的缺陷：不灵活不可配置。代码已发布到生产环境便不可更改，除非重新发布代码。 </p>
-<p><strong>2 日志框架出现</strong><br>有需求就会有人提供服务，面对Java的这种日志问题。出现了第一个试图解决Java日志问题的框架–<code>Log4j</code>。log4j确实是一个开创性的产品，里面提出的很多理念都深深地影响着现在的日志系统。最重要的是他几乎解决了当时Java日志系统的所有问题。包括后面的几个日志框架都没有替代它，直到现在他还有很强的生命力。 </p>
-<p><strong>3 SUN公司重视日志框架</strong><br>在Log4j出现之后，SUN公司意识到了日志系统的重要性。于是在JDK1.4之中也加入了logging日志模块。他没有直接将log4j收入囊中，而是参照log4j自己写了一套。但是写的并没有log4j好。最后自己就放弃了。 </p>
-<p><strong>4 Apache公司试图解决日志问题</strong><br>common-logging是apache提供的一个通用的日志接口。用户可以自由选择第三方的日志组件作为具体实现，像log4j，或者jdk自带的logging， common-logging会通过动态查找的机制，在程序运行时自动找出真正使用的日志库。这样做的好处是避免了日志方案的直接耦合。接口是commons-logging实现确可以随时更改而不用更改代码。但是他也有很大的缺陷：由于它使用了ClassLoader寻找和载入底层的日志库， 导致了象OSGI这样的框架无法正常工作，因为OSGI的不同的插件使用自己的ClassLoader。 OSGI的这种机制保证了插件互相独立，然而却使Apache Common-Logging无法工作。所以几乎没有人使用这个日志框架 </p>
-<p><strong>5 日志框架的确定</strong><br>直到SLF4J加Logback的出现，Java的日志系统终于天下归一统了。slf4j类似commons-logging，向应用层提供API接口，所有用户的编程都是面向slf4j的，而底层的实现可以是任何日志框架，现在最好的是logback。他们的优点我就不说了，网上一大堆。 </p>
-<h2 id="logback配置详解"><a href="#logback配置详解" class="headerlink" title="logback配置详解"></a>logback配置详解</h2><p>下面的配置文件可以认为是一个最全的logback的配置文件。在日常的开发中，我们只需要摘取其中的子集就可以了。  </p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version="1.0" encoding="UTF-8"?&gt;        </div><div class="line">&lt;configuration debug="false" scan="true" scanPeriod="5000"&gt;  </div><div class="line">    &lt;contextName&gt;logback_context&lt;/contextName&gt;  </div><div class="line">    &lt;property name="log.dir" value="/home/chenglai.guo/log" /&gt;  </div><div class="line">    &lt;appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"&gt;  </div><div class="line">        &lt;encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"&gt;  </div><div class="line">            &lt;pattern&gt;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %class:%line - %msg%n&lt;/pattern&gt;  </div><div class="line">        &lt;/encoder&gt;  </div><div class="line">    &lt;/appender&gt;  </div><div class="line"></div><div class="line">    &lt;appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;  </div><div class="line">        &lt;encoder&gt;  </div><div class="line">            &lt;pattern&gt;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %class:%line - %msg%n&lt;/pattern&gt;  </div><div class="line">            &lt;charset&gt;UTF-8&lt;/charset&gt;  </div><div class="line">        &lt;/encoder&gt;  </div><div class="line">        &lt;rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"&gt;  </div><div class="line">            &lt;FileNamePattern&gt;$&#123;log.dir&#125;/%d&#123;yyyy-MM-dd&#125;.error.log&lt;/FileNamePattern&gt;  </div><div class="line">            &lt;MaxHistory&gt;10&lt;/MaxHistory&gt;  </div><div class="line">        &lt;/rollingPolicy&gt;  </div><div class="line">    &lt;/appender&gt;  </div><div class="line"></div><div class="line">    &lt;appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;  </div><div class="line">        &lt;encoder&gt;  </div><div class="line">            &lt;pattern&gt;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125; [%thread] %-5level %class:%line - %msg%n&lt;/pattern&gt;  </div><div class="line">            &lt;charset&gt;UTF-8&lt;/charset&gt;  </div><div class="line">        &lt;/encoder&gt;  </div><div class="line"></div><div class="line">        &lt;rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"&gt;  </div><div class="line">            &lt;FileNamePattern&gt;$&#123;log.dir&#125;/%d&#123;yyyy-MM-dd&#125;.error.log&lt;/FileNamePattern&gt;  </div><div class="line">            &lt;MaxHistory&gt;30&lt;/MaxHistory&gt;  </div><div class="line">        &lt;/rollingPolicy&gt;  </div><div class="line"></div><div class="line">        &lt;filter class="ch.qos.logback.classic.filter.LevelFilter"&gt;  </div><div class="line">            &lt;level&gt;ERROR&lt;/level&gt;  </div><div class="line">            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;  </div><div class="line">            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;  </div><div class="line">        &lt;/filter&gt;  </div><div class="line"></div><div class="line">          </div><div class="line"></div><div class="line">        &lt;triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy"&gt;  </div><div class="line">            &lt;MaxFileSize&gt;1000MB&lt;/MaxFileSize&gt;  </div><div class="line">        &lt;/triggeringPolicy&gt;  </div><div class="line">    &lt;/appender&gt;  </div><div class="line"></div><div class="line">    &lt;appender name="SQL_FILE"  class="ch.qos.logback.core.rolling.RollingFileAppender"&gt;  </div><div class="line"></div><div class="line">        &lt;rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"&gt;  </div><div class="line">            &lt;FileNamePattern&gt;$&#123;log.dir&#125;/dbaccess.log.%d&#123;yyyy-MM-dd&#125;.log&lt;/FileNamePattern&gt;  </div><div class="line">            &lt;MaxHistory&gt;30&lt;/MaxHistory&gt;      </div><div class="line">        &lt;/rollingPolicy&gt;  </div><div class="line"></div><div class="line">        &lt;encoder&gt;  </div><div class="line">            &lt;pattern&gt;%d&#123;yyyy-MM-dd HH:mm:ss.SSS&#125;  [%thread] %-5level %class:%line - %msg%n&lt;/pattern&gt;  </div><div class="line">            &lt;charset&gt;UTF-8&lt;/charset&gt;  </div><div class="line">        &lt;/encoder&gt;  </div><div class="line"></div><div class="line">        &lt;filter class="ch.qos.logback.classic.filter.LevelFilter"&gt;  </div><div class="line">            &lt;level&gt;INFO&lt;/level&gt;  </div><div class="line">            &lt;onMatch&gt;ACCEPT&lt;/onMatch&gt;  </div><div class="line">            &lt;onMismatch&gt;DENY&lt;/onMismatch&gt;  </div><div class="line">        &lt;/filter&gt;  </div><div class="line">    &lt;/appender&gt;  </div><div class="line"></div><div class="line">    &lt;logger name="org.springframework" level="ERROR"/&gt;  </div><div class="line">    &lt;logger name="org.apache.ibatis" level="ERROR"/&gt;  </div><div class="line">    &lt;logger name="java.sql.Connection" level="ERROR"/&gt;  </div><div class="line">    &lt;logger name="java.sql.Statement" level="ERROR"/&gt;  </div><div class="line">    &lt;logger name="java.sql.PreparedStatement" level="ERROR"/&gt;  </div><div class="line">    &lt;logger name="com.qunar.des.common.dao" additivity="false" level="INFO"&gt;  </div><div class="line">        &lt;appender-ref ref="SQL_FILE"/&gt;  </div><div class="line">    &lt;/logger&gt;  </div><div class="line"></div><div class="line">    &lt;root level="INFO"&gt;  </div><div class="line">        &lt;appender-ref ref="STDOUT"/&gt;  </div><div class="line">        &lt;appender-ref ref="FILE"/&gt;  </div><div class="line">        &lt;appender-ref ref="ERROR_FILE"/&gt;  </div><div class="line">    &lt;/root&gt;  </div><div class="line"></div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Java的日志系统经过了漫长的发展，最后确认为slf4j加logback的结构。充分证明了logback的生命力。&lt;br&gt;
-    
-    </summary>
-    
-      <category term="Java" scheme="http://guochenglai.com/categories/Java/"/>
-    
-    
-      <category term="Java" scheme="http://guochenglai.com/tags/Java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Guava学习教程之3-Predict,Predicts,Function,Functions函数详解</title>
-    <link href="http://guochenglai.com/2016/09/10/guava3-predict-predicts-function-functions/"/>
-    <id>http://guochenglai.com/2016/09/10/guava3-predict-predicts-function-functions/</id>
-    <published>2016-09-10T13:27:16.000Z</published>
-    <updated>2017-05-29T12:58:22.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>Guava提供了一些接口和类，提供了一种类似函数式的编程风格。这个有一定的吸引力，但是远远没有Java8中lamada表达式配合函数式编程来的爽，而且Guava提供的这些接口的主要功能并不是在使用函数式编程风格，而是一下的使用方式。这些类/接口主要有： <a id="more"></a></p>
-<ul>
-<li>Predicate接口：用来判断一个对象是否满足某些条件。</li>
-<li>Predicates类：提供了对Predicate接口的操作方法。</li>
-<li>Function接口：将一种类型的对象转换成另外一种类型的对象。</li>
-<li>Functons类：提供了对Function接口的操作方法。</li>
-</ul>
-<p>Predicate接口的主要作用是配合集合工具类进行过滤。<br>过滤出名字中含有”g”的所有名字：  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">Predicate&lt;String&gt; nameFilter = <span class="keyword">new</span> Predicate&lt;String&gt;()&#123;  </div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(String input)</span></span>&#123;  </div><div class="line">          <span class="keyword">if</span>(Strings.isNullOrEmpty(input))&#123;  </div><div class="line">              <span class="keyword">return</span> <span class="keyword">false</span>;  </div><div class="line">          &#125;  </div><div class="line"></div><div class="line">          <span class="keyword">if</span>(input.contrains(<span class="string">"g"</span>))&#123;  </div><div class="line">             <span class="keyword">return</span> <span class="keyword">true</span>;  </div><div class="line">          &#125;  </div><div class="line">          <span class="keyword">return</span> <span class="keyword">false</span>;  </div><div class="line">    &#125;   </div><div class="line">&#125;     </div><div class="line"></div><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"gcl"</span>,<span class="string">"guo"</span>,<span class="string">"zs"</span>,<span class="string">"hpx"</span>);  </div><div class="line"></div><div class="line">Collection&lt;String&gt; result = Collections2.filter(names, predicate);</div></pre></td></tr></table></figure>
-<p>说明：<br>在企业开发了经常会有集合的过滤操作，我们往往写一系列类继承自Predicate接口，来进行一系列的过滤。  </p>
-<p>Predicate常用的集合过滤方法： </p>
-<table>
-<thead>
-<tr>
-<th>集合类型</th>
-<th>过滤方法说明 </th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Collection</td>
-<td>Collections2.filter(Collection, Predicate)将一个collection按照predicate条件进行过滤返回另外一collection </td>
-</tr>
-<tr>
-<td>Set</td>
-<td>Sets.filter(Set, Predicate) 将一个set按照predicate条件进行过滤返回另外一个set </td>
-</tr>
-<tr>
-<td>Map</td>
-<td>Maps.filterKeys(Map, Predicate)  Maps.filterValues(Map,Predicate)  Maps.filterEntries(Map,Predicate) 将一个map按照predicate条件进行过滤返回另外一个map </td>
-</tr>
-<tr>
-<td>Multimap</td>
-<td>Multimaps.filterKeys(Multimap,Predicate) Multimaps.filterValues(Multimap,Predicate) Multimaps.filterEntries(Multimap,Predicate) 将一个Multimap按照predicate条件进行过滤返回另外一个Multimap </td>
-</tr>
-<tr>
-<td>SortedMap</td>
-<td>Maps.filterKeys(SortedMap,Predicate)  Maps.filterValues(SortddMap, Predicate)  Maps.filterEntries(SortedMap, Predicate) 将一个SortedMap按照predicate条件进行过滤返回另外一个SortedMap </td>
-</tr>
-<tr>
-<td>Iterable</td>
-<td>Iterables.filter(Iterable, Predicate) 将一个可迭代的接口列表转换成另外一个可迭代的接口列表 </td>
-</tr>
-<tr>
-<td>Iterator</td>
-<td>Iterators.filter(Iterator, Predicate) 将一个迭代器按照predicate条件转换成另外一个迭代器 </td>
-</tr>
-</tbody>
-</table>
-<p>注意：<br>这里没有对List进行过滤的方法，如果想要过滤返回一个List集合可以采用如下方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">List targetList = Lists.newArrayList(Collections2.filter(originList,predicate))</div></pre></td></tr></table></figure>
-<p>Predicates主要有两个作用： </p>
-<ul>
-<li>提供了常见使用的Predicate方法</li>
-<li>提供了对Predicate接口的操作方法</li>
-</ul>
-<p>过滤出名字中包含字母“g”的所有名字  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"gcl"</span>,<span class="string">"guo"</span>,<span class="string">"zs"</span>,<span class="string">"hpx"</span>);  </div><div class="line"></div><div class="line">List&lt;String&gt; filterNames = Lists.newArrayList(Collections2.filter(names,Predicates.contrainsPattern(<span class="string">"g"</span>))</div></pre></td></tr></table></figure>
-<p>排除所有名字为null的名字  </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"gcl"</span>,<span class="keyword">null</span>,<span class="string">"guo"</span>,<span class="string">"zs"</span>,<span class="keyword">null</span>,<span class="string">"hpx"</span>);  </div><div class="line"></div><div class="line">Collection&lt;String&gt; result = Collections.filter(names,Predicates.notNull())</div></pre></td></tr></table></figure>
-<p>Predicate的and/or/not操作： </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Predicate andPredicate = Predicates.and(predicateA, predicateB);  </div><div class="line"></div><div class="line">Predicate orPredicate = Predicates.or(predicateA, predicateB);  </div><div class="line"></div><div class="line">Predicate andPredicate = Predicates.not(predicateA);</div></pre></td></tr></table></figure>
-<h2 id="Function"><a href="#Function" class="headerlink" title="Function"></a>Function</h2><p>Function可以用来将一种类型的对象转换成另外一种类型的对象，最常用的是用法是将一种类型的集合转换成另外一种类型的集合。<br>将名字集合中的所有名字后面都加上”baobao”二字（学习支付宝）<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">Function&lt;String,String&gt; transFunction = <span class="keyword">new</span> Function(String,String)()&#123;  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">apply</span><span class="params">(input)</span></span>&#123;  </div><div class="line"></div><div class="line">       <span class="keyword">return</span> input+<span class="string">"baobao"</span>;  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;  </div><div class="line"></div><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"gcl"</span>,<span class="string">"guo"</span>,<span class="string">"zs"</span>,<span class="string">"hpx"</span>);  </div><div class="line"></div><div class="line">  </div><div class="line"></div><div class="line">List&lt;String&gt; result = Lists.transform(names,transFunction);</div></pre></td></tr></table></figure></p>
-<p>Function常用的集合转换方法： </p>
-<table>
-<thead>
-<tr>
-<th>集合类型</th>
-<th>过滤方法说明</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Collection</td>
-<td>Collections2.transform(Collection, Function) 将一个collection按照function函数转换成另外一个collection </td>
-</tr>
-<tr>
-<td>List</td>
-<td>Lists.transform(List, Function) 将一个list按照function函数转换成另外一个list </td>
-</tr>
-<tr>
-<td>Map</td>
-<td>Maps.transformValues(Map,Function)  Maps.transformEntries(Map,EntryTransformer) 将一个map按照function函数转换成另外一个map </td>
-</tr>
-<tr>
-<td>Multimap</td>
-<td>Multimaps.transformValues(Multimap,Function)  Multimaps.transformEntries(Multimap,EntryTransformer) 将一个Multimap按照function函数转换成另外一个Multimap </td>
-</tr>
-<tr>
-<td>Iterator</td>
-<td>Iterators.transform(Iterator, Function) 将一个迭代器按照function函数转换成另外一个迭代器 </td>
-</tr>
-<tr>
-<td>Iterable</td>
-<td>Iterables.transform(Iterable, Function) 将一个可迭代接口列表按照function函数转换成另外一个可迭代接口列表 </td>
-</tr>
-</tbody>
-</table>
-<p>注意：这里没有对Set进行转换的方法，如果需要转换返回一个Set集合可以采用如下的方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Set targetSet = Sets.newHashSet(Collectios2.transform(originSet,function))</div></pre></td></tr></table></figure>
-<h2 id="Functions"><a href="#Functions" class="headerlink" title="Functions"></a>Functions</h2><p>Functions是用来对Function接口进行操作：<br>例如：想讲名字的列表转换成字符长度的列表，然后判断字符长度是否是偶数。 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Function&lt;String,Integer&gt; f1 = <span class="keyword">new</span> Function&lt;String,Integer&gt;()&#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span>  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">apply</span><span class="params">(String input)</span> </span>&#123;  </div><div class="line"></div><div class="line">        <span class="keyword">return</span> input.length();  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;;  </div><div class="line"></div><div class="line">Function&lt;Integer,Boolean&gt; f2 = <span class="keyword">new</span> Function&lt;Integer,Boolean&gt;()&#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span>  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Boolean <span class="title">apply</span><span class="params">(Integer input)</span> </span>&#123;  </div><div class="line"></div><div class="line">        <span class="keyword">return</span> input % <span class="number">2</span> == <span class="number">0</span>;  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;;  </div><div class="line"></div><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"John"</span>, <span class="string">"Jane"</span>, <span class="string">"Adam"</span>, <span class="string">"Tom"</span>);  </div><div class="line"></div><div class="line">List&lt;Boolean&gt; result = Lists.transform(names, Functions.compose(f2, f1));</div></pre></td></tr></table></figure>
-<p>将名字中含有字母g的名字，转换成字母的长度 </p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Predicate&lt;String&gt; predicate = <span class="keyword">new</span> Predicate&lt;String&gt;() &#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span>  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">apply</span><span class="params">(String input)</span> </span>&#123;  </div><div class="line"></div><div class="line">        <span class="keyword">return</span> input.contrains(<span class="string">"a"</span>);  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;;  </div><div class="line"></div><div class="line">Function&lt;String, Integer&gt; func = <span class="keyword">new</span> Function&lt;String,Integer&gt;()&#123;  </div><div class="line"></div><div class="line">    <span class="meta">@Override</span>  </div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">apply</span><span class="params">(String input)</span> </span>&#123;  </div><div class="line"></div><div class="line">        <span class="keyword">return</span> input.length();  </div><div class="line"></div><div class="line">    &#125;  </div><div class="line"></div><div class="line">&#125;;  </div><div class="line"></div><div class="line">  </div><div class="line">List&lt;String&gt; names = Lists.newArrayList(<span class="string">"gcl"</span>,<span class="string">"guo"</span>,<span class="string">"zs"</span>,<span class="string">"hpx"</span>);  </div><div class="line"></div><div class="line">List&lt;Integer&gt; result = FluentIterable.from(names)  </div><div class="line"></div><div class="line">                        .filter(predicate)  </div><div class="line"></div><div class="line">                        .transform(func)  </div><div class="line"></div><div class="line">                        .toList();</div></pre></td></tr></table></figure>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Guava提供了一些接口和类，提供了一种类似函数式的编程风格。这个有一定的吸引力，但是远远没有Java8中lamada表达式配合函数式编程来的爽，而且Guava提供的这些接口的主要功能并不是在使用函数式编程风格，而是一下的使用方式。这些类/接口主要有：
     
     </summary>
     
