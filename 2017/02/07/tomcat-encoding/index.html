@@ -15,7 +15,7 @@ ga('create','UA-78419105-1','auto');ga('send','pageview');</script></head><body>
 </li>
 </ul>
 <p>通过分析Parameter的参数编码规则可以看到我们代码的问题。我们现在的代码都没有在客户端显示设置<code>request.setEncoding=XXXX</code>，采用的替代方案是在服务器的web.xml中采用过滤器，过滤每个请求设置这个参数。而如果没有把过滤器放在第一位。就会出现一个问题，会采用Tomcat的默认编码IOS8859-1，来解析参数。这也就是为什么我的代码里面所有地方都设置了UTF-8编码。最后也会出现乱码的原因。所以这里提醒大家一定要把web.xml中关于字符编码的过滤器放在第一位。</p>
-</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a data-url="http://guochenglai.com/2017/02/07/tomcat-encoding/" data-id="cj4mpqxat004ra3gvpldqfhky" class="article-share-link">分享</a><div class="tags"><a href="/tags/Java/">Java</a></div><div class="post-nav"><a href="/2017/02/09/java-syntactic-sugar/" class="pre">Java语法糖</a><a href="/2017/02/06/apple-script-guide/" class="next">AppleScript简明教程</a></div><div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div><script>var cloudTieConfig = {
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a data-url="http://guochenglai.com/2017/02/07/tomcat-encoding/" data-id="cj5147nd20053twgv50i12nje" class="article-share-link">分享</a><div class="tags"><a href="/tags/Java/">Java</a></div><div class="post-nav"><a href="/2017/02/09/java-syntactic-sugar/" class="pre">Java语法糖</a><a href="/2017/02/06/apple-script-guide/" class="next">AppleScript简明教程</a></div><div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div><script>var cloudTieConfig = {
   url: document.location.href,
   productKey: "4e7d0025e59f4202ad52afa122a96a8a",
   target: "cloud-tie-wrapper"
